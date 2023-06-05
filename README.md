@@ -1,2 +1,2 @@
 # segment-lidar
-A package for segmenting LiDAR data using Segment-Anything from Meta Search.
+A package for segmenting LiDAR data using Segment-Anything Model from Meta Search.
