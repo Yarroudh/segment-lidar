@@ -1,0 +1,14 @@
+environment:
+  KMP_DUPLICATE_LIB_OK: True
+device: cuda:0
+model_type: vit_h
+ckp_path: default
+mask_generator:
+  model: sam
+  points_per_side: 32
+  pred_iou_thresh: 0.9
+  stability_score_tresh: 0.92
+  crop_n_layers: 1
+  crop_n_points_downcale_factor: 3
+  min_mask_region_area: 1000
+input:
