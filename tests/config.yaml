@@ -1,15 +1,16 @@
 device: cuda:0
+algorithm: segment-geospatial
 model_type: vit_h
 model_path: tests/model/sam_vit_h_4b8939.pth
-mask_generator:
+sam_kwargs:
   points_per_side: 32
   pred_iou_thresh: 0.9
   stability_score_thresh: 0.92
   crop_n_layers: 1
-  crop_n_points_downscale_factor: 3
+  crop_n_points_downscale_factor: 2
   min_mask_region_area: 1000
 input_path: tests/data/pointcloud.las
 output_path: tests/results/classified.las
 classification: null
 image_path: tests/results/raster.tif
-resolution: 0.75
+resolution: 0.20
