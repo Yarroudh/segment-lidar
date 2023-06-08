@@ -8,6 +8,8 @@
 
 This package is specifically designed for **unsupervised instance segmentation** of **aerial LiDAR data**. It brings together the power of the **Segment-Anything Model (SAM)** developed by [Meta Research](https://github.com/facebookresearch) and the **segment-geospatial** package from [Open Geospatial Solutions](https://github.com/opengeos). Whether you're a researcher, developer, or a geospatial enthusiast, segment-lidar opens up new possibilities for automatic processing of aerial LiDAR data and enables further applications. We encourage you to explore our code, contribute to its development and leverage its capabilities for your segmentation tasks.
 
+![segment-lidar](https://github.com/Yarroudh/segment-lidar/assets/72500344/634ef333-a7a0-421e-868f-c78f2e18e7ee)
+
 ## Installation
 
 To install `segment-lidar` from source, you need to run the following commands:
