@@ -33,7 +33,7 @@ python setup.py install
 
 After installation, you have a small program called <code>segment-lidar</code>. Use <code>segment-lidar --help</code> to see the detailed help:
 
-```bash
+```
 Usage: segment-lidar [OPTIONS] COMMAND [ARGS]...
 
   A package for segmenting LiDAR data using Segment-Anything from Meta AI
