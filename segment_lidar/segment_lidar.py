@@ -67,6 +67,9 @@ def cli():
 @click.option('--output', '-o', type=click.Path(exists=False), required=False, help='Output path')
 
 def create_config(output):
+    '''
+    Create a configuration YAML file.
+    '''
     configuration = {
         "device": "cuda:0",
         "algorithm": "segment-geospatial",
@@ -111,7 +114,7 @@ def create_config(output):
 
 def segment(input, output, config):
     '''
-    Segment LiDAR data using SAM.
+    Segment LiDAR data.
     '''
     start = time.time()
 
@@ -254,4 +257,4 @@ cli.add_command(create_config)
 cli.add_command(segment)
 
 if __name__ == '__main__':
-    cli()
+    cli(prog_name='segment-lidar')
