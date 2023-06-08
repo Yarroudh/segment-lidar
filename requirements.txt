@@ -1,9 +1,9 @@
 PyYAML
+pycocotools
 click
 opencv-python
 numpy
 supervision
 segment-geospatial==0.8.1
 rasterio
-torch
 laspy==2.4.1
