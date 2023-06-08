@@ -92,7 +92,7 @@ The resulted point cloud contains a new scalar field called `segment_id`. For vi
 ## Configuration
 
 - `algorithm`: algorithm to use for instance segmentation [segment-geospatial/segment-anything].
-- `model_path`: path of the model checkpoints. If you are using **segment-geospatial**, do not worry about this parameter.
+- `model_path`: path of the model checkpoints. See **segment-anything** repository for models.
 - `model_type`: SAM model version [vit_h/vit_l/vit_b].
 - `device`: if **cpu** the prediction will use the CPU, if you have cuda, use **cuda:0** instead for GPU.
 - `input_path`: path to your input LAS/LAZ file.
