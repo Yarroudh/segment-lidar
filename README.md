@@ -12,6 +12,7 @@ This package is specifically designed for **unsupervised instance segmentation**
 
 ## Installation
 
+We recommand using `python==3.9`.
 To install `segment-lidar` from source, you need to run the following commands:
 
 ```bash
@@ -20,13 +21,9 @@ cd segment-lidar
 python setup.py install
 ```
 
-Verify that the application was correctly installed by running this command:
+## Usage of the package
 
-```bash
-segment-lidar --help
-```
-
-If the command shows you the following message, the application is correctly installed in your environment:
+After installation, you have a small program called <code>segment-lidar</code>. Use <code>segment-lidar --help</code> to see the detailed help:
 
 ```bash
 Usage: segment-lidar [OPTIONS] COMMAND [ARGS]...
@@ -41,3 +38,63 @@ Commands:
   create-config  Create a configuration YAML file.
   segment        Segment LiDAR data.
 ```
+
+The package reads `.LAS` or `.LAZ` file, then perform instance segmentation using [segment-geospatial](https://github.com/opengeos/segment-geospatial) or/and [segment-anything](https://github.com/facebookresearch/segment-anything) algorithms. The user should first create the **configuration** file by running:
+
+```bash
+segment-lidar create-config -o config.yaml
+```
+
+This will create a configuration file as follow:
+
+```yaml
+algorithm: segment-geospatial
+classification: null
+device: cuda:0
+image_path: raster.tif
+input_path: pointcloud.las
+model_path: sam_vit_h_4b8939.pth
+model_type: vit_h
+output_path: classified.las
+resolution: 0.15
+sam_geo:
+  automatic: true
+  box_threshold: 0.24
+  erosion_kernel_size: 3
+  sam_kwargs: false
+  text_prompt: null
+  text_threshold: 0.3
+sam_kwargs:
+  crop_n_layers: 1
+  crop_n_points_downscale_factor: 1
+  min_mask_region_area: 10000
+  points_per_side: 32
+  pred_iou_thresh: 0.9
+  stability_score_thresh: 0.92
+```
+
+The second step is to run the segmentation:
+
+```bash
+segment-lidar segment --config config.yaml
+```
+
+The resulted point cloud contains a new scalar field called `segment_id`. For visualization and further processing, we recommand using [CloudCompare](https://www.danielgm.net/cc/).
+
+## Related repositories
+
+[Segment Anything](https://github.com/facebookresearch/segment-anything)
+[segment-geospatial](https://github.com/opengeos/segment-geospatial)
+
+## Documentation
+
+Coming soon.
+
+## License
+
+This software is under the MIT License, a permissive license that grants you extensive freedom to use, modify, and distribute the software, provided that you include the MIT copyright and license notice in all copies or substantial portions of the software. Please refer to the [LICENSE](https://github.com/Yarroudh/segment-lidar/blob/main/LICENSE) file for more detailed information.
+
+## Author
+
+This software was developped by [Anass Yarroudh](https://www.linkedin.com/in/anass-yarroudh/), a Research Engineer in the [Geomatics Unit of the University of Liege](http://geomatics.ulg.ac.be/fr/home.php).
+For more detailed information please contact us via <ayarroudh@uliege.be>, we are pleased to send you the necessary information.
