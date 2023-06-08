@@ -14,7 +14,7 @@ This package is specifically designed for **unsupervised instance segmentation**
 
 We recommand using `python==3.9`. First, you need to install `PyTorch`. Please follow the instructions [here](https://pytorch.org/).
 
-Then, you can easily install `segment-lidar` from [PyPI]():
+Then, you can easily install `segment-lidar` from [PyPI](https://pypi.org/project/segment-lidar/):
 
 ```bash
 pip install segment-lidar
