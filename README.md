@@ -83,8 +83,8 @@ The resulted point cloud contains a new scalar field called `segment_id`. For vi
 
 ## Related repositories
 
-[Segment Anything](https://github.com/facebookresearch/segment-anything)
-[segment-geospatial](https://github.com/opengeos/segment-geospatial)
+- [Segment Anything](https://github.com/facebookresearch/segment-anything)
+- [segment-geospatial](https://github.com/opengeos/segment-geospatial)
 
 ## Documentation
 
