@@ -89,6 +89,22 @@ segment-lidar segment --config config.yaml
 
 The resulted point cloud contains a new scalar field called `segment_id`. For visualization and further processing, we recommand using [CloudCompare](https://www.danielgm.net/cc/).
 
+## Configuration
+
+- `algorithm`: algorithm to use for instance segmentation [segment-geospatial/segment-anything].
+- `model_path`: path of the model checkpoints. If you are using **segment-geospatial**, do not worry about this parameter.
+- `model_type`: SAM model version [vit_h/vit_l/vit_b].
+- `device`: if **cpu** the prediction will use the CPU, if you have cuda, use **cuda:0** instead for GPU.
+- `input_path`: path to your input LAS/LAZ file.
+- `output_path`: path to your output LAS/LAZ file. The results will be saved in this file.
+- `image_path`: path to the resulted image. The segmentation results of SAM or segment-geospatial will be saved in this file.
+- `classification`: specify the class number you want to segment. This will limit instance segmentation to specified class. **This feature is not implemented yet**
+- `resolution`: resolution of the image created from the point cloud.
+- `sam_kwargs`: refer to **segment-anything** for additionnal information.
+- `sam_geo`: refer to **segment-geospatial** for additionnal information.
+
+Please note that the actual version is a pre-release and it's under tests. If you find any issue or bug, please report it in **issues** section. The second version will have more advanced features.
+
 ## Related repositories
 
 - [Segment Anything](https://github.com/facebookresearch/segment-anything)
