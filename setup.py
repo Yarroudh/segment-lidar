@@ -7,17 +7,22 @@ setup(
     name="segment-lidar",
     version='0.1.2',
     description="A package for segmenting LiDAR data using Segment-Anything Model (SAM) from Meta AI Research.",
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
     license='BSD 3-Clause "New" or "Revised" License',
-    author = 'Anass Yarroudh',
-    author_email = 'ayarroudh@uliege.be',
-    url = 'https://github.com/Yarroudh/segment-lidar',
+    author='Anass Yarroudh',
+    author_email='ayarroudh@uliege.be',
+    url='https://github.com/Yarroudh/segment-lidar',
     packages=find_packages(),
     install_requires=requirements,
     entry_points={
         "console_scripts": [
             "segment-lidar=segment_lidar.main:cli"
         ]
-    }
+    },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+    ],
 )
