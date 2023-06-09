@@ -14,6 +14,7 @@ from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
 from samgeo import SamGeo
 from samgeo.text_sam import LangSAM
 import rasterio
+import CSF
 import laspy
 
 
@@ -75,31 +76,38 @@ def create_config(output):
     Create a configuration YAML file.
     '''
     configuration = {
-        "device": "cuda:0",
         "algorithm": "segment-geospatial",
-        "model_type": "vit_h",
-        "model_path": "sam_vit_h_4b8939.pth",
-        "sam_kwargs": {
-            "points_per_side": 32,
-            "pred_iou_thresh": 0.9,
-            "stability_score_thresh": 0.92,
-            "crop_n_layers": 1,
-            "crop_n_points_downscale_factor": 1,
-            "min_mask_region_area": 10000
+        "classification": None,
+        "csf_filter": True,
+        "csf_params": {
+            "slope_smooth": False,
+            "cloth_resolution": 0.2,
+            "class_threshold": 0.5,
+            "interations": 500
         },
+        "device": "cuda:0",
+        "image_path": "raster.tif",
+        "input_path": "pointcloud.las",
+        "model_path": "sam_vit_h_4b8939.pth",
+        "model_type": "vit_h",
+        "output_path": "classified.las",
+        "resolution": 0.15,
         "sam_geo": {
             "automatic": True,
-            "erosion_kernel_size": 3,
-            "sam_kwargs": False,
-            "text_prompt": None,
             "box_threshold": 0.24,
-            "text_threshold": 0.30
+            "erosion_kernel_size": 3,
+            "sam_kwargs": True,
+            "text_prompt": None,
+            "text_threshold": 0.3
         },
-        "input_path": "pointcloud.las",
-        "output_path": "classified.las",
-        "classification": None,
-        "image_path": "raster.tif",
-        "resolution": 0.15
+        "sam_kwargs": {
+            "crop_n_layers": 1,
+            "crop_n_points_downscale_factor": 1,
+            "min_mask_region_area": 1000,
+            "points_per_side": 32,
+            "pred_iou_thresh": 0.95,
+            "stability_score_thresh": 0.92
+        }
     }
 
     yaml_data = yaml.dump(configuration)
@@ -135,6 +143,8 @@ def segment(input, output, config):
 
     # Read input LiDAR data
     input_path = input if input else cnfg['input_path']
+    lidar = laspy.read(input_path)
+
 
     # 3D point cloud to 2D image
     image_path = cnfg['image_path']
@@ -154,8 +164,6 @@ def segment(input, output, config):
 
     extension = '.las' if extension == '.laz' else extension
 
-    lidar = laspy.read(input_path)
-
     # Filter points based on classification value
     if classification == None:
         pcd = lidar.points
@@ -167,6 +175,20 @@ def segment(input, output, config):
         points = np.vstack((pcd.x, pcd.y, pcd.z, pcd.red / 255.0, pcd.green / 255.0, pcd.blue / 255.0)).transpose()
     else:
         points = np.vstack((pcd.x, pcd.y, pcd.z)).transpose()
+
+    # Filter ground points if required
+    if cnfg['csf_filter']:
+        csf = CSF.CSF()
+        csf.params.bSloopSmooth = cnfg['csf_params']['slope_smooth']
+        csf.params.cloth_resolution = cnfg['csf_params']['cloth_resolution']
+        csf.params.interations = cnfg['csf_params']['iterations']
+        csf.params.class_threshold = cnfg['csf_params']['class_threshold']
+        csf.setPointCloud(points[:, :3])
+
+        ground = CSF.VecInt()
+        non_ground = CSF.VecInt()
+        csf.do_filtering(ground, non_ground)
+        points = points[non_ground, :]
 
     # Convert points to image
     minx = np.min(points[:, 0])
@@ -258,11 +280,21 @@ def segment(input, output, config):
         segmented_image = np.squeeze(segmented_image)
 
     segment_ids = image_to_cloud(points, minx, maxy, segmented_image, resolution)
-    lidar.points = pcd
-    lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
-    lidar.segment_id = segment_ids
+
+    # Save point cloud
+    if cnfg['ground_filter']:
+        points = np.concatenate((non_ground, ground))
+        lidar.points = pcd[points]
+        segment_ids = np.append(segment_ids, np.full(len(ground), -1))
+        lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
+        lidar.segment_id = segment_ids
+    else:
+        lidar.points = pcd
+        lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
+        lidar.segment_id = segment_ids
 
     lidar.write(output_path)
+
 
     end = time.time()
     print(f'Point cloud segmentation completed in {np.round(end - start, 2)} seconds.')
