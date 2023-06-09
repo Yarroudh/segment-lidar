@@ -20,7 +20,6 @@ from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
 from samgeo import SamGeo
 from samgeo.text_sam import LangSAM
 import rasterio
-import CSF
 import laspy
 
 
