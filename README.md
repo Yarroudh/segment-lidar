@@ -14,6 +14,11 @@ This package is specifically designed for **unsupervised instance segmentation**
 ## Installation
 
 We recommand using `python==3.9`. First, you need to install `PyTorch`. Please follow the instructions [here](https://pytorch.org/).
+Make sure to also install **Cloth Simulation Filter** for **ground filtering** option by running:
+
+```bash
+pip install git+https://github.com/jianboqi/CSF.git
+```
 
 Then, you can easily install `segment-lidar` from [PyPI](https://pypi.org/project/segment-lidar/):
 
