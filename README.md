@@ -111,9 +111,11 @@ This data was retrieved from **AHN-4**. For more data, please visit [AHN-Viewer]
 - `output_path`: path to your output .las/.laz file. The results will be saved in this file.
 - `image_path`: path to the resulted image. The segmentation results of SAM or segment-geospatial will be saved in this file.
 - `classification`: specify the class number you want to segment. This will limit instance segmentation to specified **class**.
+- `csf_filter`: apply ground filtering using cloth simulation filter.
+- `csf_params`: refer to [Cloth Simulation Filer](http://ramm.bnu.edu.cn/projects/CSF) for additional information.
 - `resolution`: resolution of the image created from the point cloud.
-- `sam_kwargs`: refer to **segment-anything** for additionnal information.
-- `sam_geo`: refer to **segment-geospatial** for additionnal information.
+- `sam_kwargs`: refer to **segment-anything** for additional information.
+- `sam_geo`: refer to **segment-geospatial** for additional information.
 
 Please note that the actual version is a pre-release and it's under tests. If you find any issues or bugs, please report them in [issues](https://github.com/Yarroudh/segment-lidar/issues) section. The second version will have more advanced features and fonctionalities.
 
