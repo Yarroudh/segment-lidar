@@ -98,7 +98,7 @@ The resulted point cloud contains a new scalar field called `segment_id`. For vi
 - `input_path`: path to your input LAS/LAZ file.
 - `output_path`: path to your output LAS/LAZ file. The results will be saved in this file.
 - `image_path`: path to the resulted image. The segmentation results of SAM or segment-geospatial will be saved in this file.
-- `classification`: specify the class number you want to segment. This will limit instance segmentation to specified class. **This feature is not implemented yet**
+- `classification`: specify the class number you want to segment. This will limit instance segmentation to specified class.
 - `resolution`: resolution of the image created from the point cloud.
 - `sam_kwargs`: refer to **segment-anything** for additionnal information.
 - `sam_geo`: refer to **segment-geospatial** for additionnal information.
