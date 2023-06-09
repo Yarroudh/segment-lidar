@@ -282,7 +282,7 @@ def segment(input, output, config):
     segment_ids = image_to_cloud(points, minx, maxy, segmented_image, resolution)
 
     # Save point cloud
-    if cnfg['ground_filter']:
+    if cnfg['csf_filter']:
         points = np.concatenate((non_ground, ground))
         lidar.points = pcd[points]
         segment_ids = np.append(segment_ids, np.full(len(ground), -1))
