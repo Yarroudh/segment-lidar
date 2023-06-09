@@ -15,9 +15,6 @@ setup(
     url = 'https://github.com/Yarroudh/segment-lidar',
     packages=find_packages(),
     install_requires=requirements,
-    dependency_links=[
-        'git+https://github.com/jianboqi/CSF.git'
-    ],
     entry_points={
         "console_scripts": [
             "segment-lidar=segment_lidar.main:cli"
