@@ -58,6 +58,12 @@ This will create a configuration file as follow:
 ```yaml
 algorithm: segment-geospatial
 classification: null
+csf_filter: true
+csf_params:
+  class_threshold: 0.5
+  cloth_resolution: 0.2
+  interations: 500
+  slope_smooth: false
 device: cuda:0
 image_path: raster.tif
 input_path: pointcloud.las
@@ -69,15 +75,15 @@ sam_geo:
   automatic: true
   box_threshold: 0.24
   erosion_kernel_size: 3
-  sam_kwargs: false
+  sam_kwargs: true
   text_prompt: null
   text_threshold: 0.3
 sam_kwargs:
   crop_n_layers: 1
   crop_n_points_downscale_factor: 1
-  min_mask_region_area: 10000
+  min_mask_region_area: 1000
   points_per_side: 32
-  pred_iou_thresh: 0.9
+  pred_iou_thresh: 0.95
   stability_score_thresh: 0.92
 ```
 
