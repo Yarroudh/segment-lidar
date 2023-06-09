@@ -4,7 +4,10 @@
 
 import os
 
-os.system('pip install git+https://github.com/jianboqi/CSF.git')
+try:
+    import CSF
+except ImportError:
+    os.system('pip install git+https://github.com/jianboqi/CSF.git')
 
 import yaml
 import click
