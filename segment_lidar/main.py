@@ -88,7 +88,7 @@ def create_config(output):
             "slope_smooth": False,
             "cloth_resolution": 0.2,
             "class_threshold": 0.5,
-            "interations": 500
+            "iterations": 500
         },
         "device": "cuda:0",
         "image_path": "raster.tif",
