@@ -116,7 +116,7 @@ Coming soon.
 
 ## License
 
-This software is under the MIT License, a permissive license that grants you extensive freedom to use, modify, and distribute the software, provided that you include the MIT copyright and license notice in all copies or substantial portions of the software. Please refer to the [LICENSE](https://github.com/Yarroudh/segment-lidar/blob/main/LICENSE) file for more detailed information.
+This software is under the BSD 3-Clause "New" or "Revised" license which is a permissive license that allows you almost unlimited freedom with the software so long as you include the BSD copyright and license notice in it. Please refer to the [LICENSE](https://github.com/Yarroudh/segment-lidar/blob/main/LICENSE) file for more detailed information.
 
 ## Author
 
