@@ -47,7 +47,7 @@ Commands:
   segment        Segment LiDAR data.
 ```
 
-The package reads `.LAS` or `.LAZ` file, then perform instance segmentation using [segment-geospatial](https://github.com/opengeos/segment-geospatial) or/and [segment-anything](https://github.com/facebookresearch/segment-anything) algorithms. The user should first create the **configuration** file by running:
+The package reads `.las` or `.laz` file, then perform instance segmentation using [segment-geospatial](https://github.com/opengeos/segment-geospatial) or/and [segment-anything](https://github.com/facebookresearch/segment-anything) algorithms. The user should first create the **configuration** file by running:
 
 ```bash
 segment-lidar create-config -o config.yaml
@@ -99,17 +99,17 @@ This data was retrieved from **AHN-4**. For more data, please visit [AHN-Viewer]
 
 - `algorithm`: algorithm to use for instance segmentation [segment-geospatial/segment-anything].
 - `model_path`: path of the model checkpoints. See **segment-anything** repository for models.
-- `model_type`: SAM model version [vit_h/vit_l/vit_b].
+- `model_type`: SAM model version [**vit_h/vit_l/vit_b**].
 - `device`: if **cpu** the prediction will use the CPU, if you have cuda, use **cuda:0** instead for GPU.
-- `input_path`: path to your input LAS/LAZ file.
-- `output_path`: path to your output LAS/LAZ file. The results will be saved in this file.
+- `input_path`: path to your input **.las/.laz** file.
+- `output_path`: path to your output .las/.laz file. The results will be saved in this file.
 - `image_path`: path to the resulted image. The segmentation results of SAM or segment-geospatial will be saved in this file.
-- `classification`: specify the class number you want to segment. This will limit instance segmentation to specified class.
+- `classification`: specify the class number you want to segment. This will limit instance segmentation to specified **class**.
 - `resolution`: resolution of the image created from the point cloud.
 - `sam_kwargs`: refer to **segment-anything** for additionnal information.
 - `sam_geo`: refer to **segment-geospatial** for additionnal information.
 
-Please note that the actual version is a pre-release and it's under tests. If you find any issue or bug, please report it in **issues** section. The second version will have more advanced features.
+Please note that the actual version is a pre-release and it's under tests. If you find any issues or bugs, please report them in [issues](https://github.com/Yarroudh/segment-lidar/issues) section. The second version will have more advanced features and fonctionalities.
 
 ## Related repositories
 
