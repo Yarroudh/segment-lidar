@@ -5,7 +5,7 @@ with open("requirements.txt", "r") as file:
 
 setup(
     name="segment-lidar",
-    version='0.1.1',
+    version='0.1.2',
     description="A package for segmenting LiDAR data using Segment-Anything Model (SAM) from Meta AI Research.",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
