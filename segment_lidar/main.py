@@ -3,6 +3,9 @@
 # This file is distributed under the BSD-3 licence. See LICENSE file for complete text of the license.
 
 import os
+
+os.system('pip install git+https://github.com/jianboqi/CSF.git')
+
 import yaml
 import click
 import time
