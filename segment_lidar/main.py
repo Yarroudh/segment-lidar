@@ -139,6 +139,7 @@ def segment(input, output, config):
     # 3D point cloud to 2D image
     image_path = cnfg['image_path']
     resolution = cnfg['resolution']
+    classification = cnfg['classification']
     extension = os.path.splitext(input_path)[1]
 
     try:
@@ -154,11 +155,20 @@ def segment(input, output, config):
     extension = '.las' if extension == '.laz' else extension
 
     lidar = laspy.read(input_path)
-    if hasattr(lidar, 'red') and hasattr(lidar, 'green') and hasattr(lidar, 'blue'):
-        points = np.vstack((lidar.x, lidar.y, lidar.z, lidar.red / 255.0, lidar.green / 255.0, lidar.blue / 255.0)).transpose()
-    else:
-        points = np.vstack((lidar.x, lidar.y, lidar.z)).transpose()
 
+    # Filter points based on classification value
+    if classification == None:
+        pcd = lidar.points
+    else:
+        pcd = lidar.points[lidar.classification == classification]
+
+    # Store points in a numpy array
+    if hasattr(lidar, 'red') and hasattr(lidar, 'green') and hasattr(lidar, 'blue'):
+        points = np.vstack((pcd.x, pcd.y, pcd.z, pcd.red / 255.0, pcd.green / 255.0, pcd.blue / 255.0)).transpose()
+    else:
+        points = np.vstack((pcd.x, pcd.y, pcd.z)).transpose()
+
+    # Convert points to image
     minx = np.min(points[:, 0])
     maxx = np.max(points[:, 0])
     miny = np.min(points[:, 1])
@@ -248,6 +258,7 @@ def segment(input, output, config):
         segmented_image = np.squeeze(segmented_image)
 
     segment_ids = image_to_cloud(points, minx, maxy, segmented_image, resolution)
+    lidar.points = pcd
     lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
     lidar.segment_id = segment_ids
 
