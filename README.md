@@ -113,7 +113,9 @@ Please note that the actual version is a pre-release and it's under tests. If yo
 
 ## Related repositories
 
-- [Segment Anything](https://github.com/facebookresearch/segment-anything)
+We would like to express our acknowledgments to the creators of:
+
+- [segment-anything](https://github.com/facebookresearch/segment-anything)
 - [segment-geospatial](https://github.com/opengeos/segment-geospatial)
 
 ## Documentation
