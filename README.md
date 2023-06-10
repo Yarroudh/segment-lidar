@@ -141,7 +141,27 @@ Coming soon.
 
 This software is under the BSD 3-Clause "New" or "Revised" license which is a permissive license that allows you almost unlimited freedom with the software so long as you include the BSD copyright and license notice in it. Please refer to the [LICENSE](https://github.com/Yarroudh/segment-lidar/blob/main/LICENSE) file for more detailed information.
 
+## Citation
+
+The use of open-source software repositories has become increasingly prevalent in scientific research. If you use this repository for your research, please make sure to cite it appropriately in your work. The recommended citation format for this repository is provided in the accompanying [BibTeX citation](https://github.com/Yarroudh/segment-lidar/blob/main/CITATION.bib). Additionally, please make sure to comply with any licensing terms and conditions associated with the use of this repository.
+
+```bib
+@misc{yarroudh:2023:samlidar,
+  author = {Yarroudh, Anass},
+  title = {LiDAR Automatic Unsurpervised Segmentation using Segment-Anything Model (SAM) from Meta AI},
+  year = {2023},
+  howpublished = {GitHub Repository},
+  url = {https://github.com/Yarroudh/segment-lidar}
+}
+```
+
+Yarroudh, A. (2023). *LiDAR Automatic Unsurpervised Segmentation using Segment-Anything Model (SAM) from Meta AI* [GitHub repository]. Retrieved from https://github.com/Yarroudh/segment-lidar
+
 ## Author
 
 This software was developped by [Anass Yarroudh](https://www.linkedin.com/in/anass-yarroudh/), a Research Engineer in the [Geomatics Unit of the University of Liege](http://geomatics.ulg.ac.be/fr/home.php).
 For more detailed information please contact us via <ayarroudh@uliege.be>, we are pleased to send you the necessary information.
+
+-----
+
+<font size="1">Copyright © 2023, [Geomatics Unit of ULiège](http://geomatics.ulg.ac.be/fr/home.php). Released under [BSD-3 Clause License](https://github.com/Yarroudh/segment-lidar/blob/main/LICENSE)</font>
