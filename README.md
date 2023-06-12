@@ -148,14 +148,14 @@ The use of open-source software repositories has become increasingly prevalent i
 ```bib
 @misc{yarroudh:2023:samlidar,
   author = {Yarroudh, Anass},
-  title = {LiDAR Automatic Unsurpervised Segmentation using Segment-Anything Model (SAM) from Meta AI},
+  title = {LiDAR Automatic Unsupervised Segmentation using Segment-Anything Model (SAM) from Meta AI},
   year = {2023},
   howpublished = {GitHub Repository},
   url = {https://github.com/Yarroudh/segment-lidar}
 }
 ```
 
-Yarroudh, A. (2023). *LiDAR Automatic Unsurpervised Segmentation using Segment-Anything Model (SAM) from Meta AI* [GitHub repository]. Retrieved from https://github.com/Yarroudh/segment-lidar
+Yarroudh, A. (2023). *LiDAR Automatic Unsupervised Segmentation using Segment-Anything Model (SAM) from Meta AI* [GitHub repository]. Retrieved from https://github.com/Yarroudh/segment-lidar
 
 ## Author
 
