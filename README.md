@@ -164,4 +164,4 @@ For more detailed information please contact us via <ayarroudh@uliege.be>, we ar
 
 -----
 
-<font size="1">Copyright © 2023, [Geomatics Unit of ULiège](http://geomatics.ulg.ac.be/fr/home.php). Released under [BSD-3 Clause License](https://github.com/Yarroudh/segment-lidar/blob/main/LICENSE)</font>
+Copyright © 2023, [Geomatics Unit of ULiège](http://geomatics.ulg.ac.be/fr/home.php). Released under [BSD-3 Clause License](https://github.com/Yarroudh/segment-lidar/blob/main/LICENSE).
