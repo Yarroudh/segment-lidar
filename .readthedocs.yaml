@@ -1,10 +1,11 @@
 version: 2
 build:
-  pre_install:
-    - python -m pip install git+https://github.com/jianboqi/CSF.git
-  post_build:
-    - python -m "from samgeo import SamGeo; from samgeo.text_sam import LangSAM;"
-  
+  jobs:
+    pre_install:
+      - python -m pip install git+https://github.com/jianboqi/CSF.git
+    post_build:
+      - python -m "from samgeo import SamGeo; from samgeo.text_sam import LangSAM;"
+
 sphinx:
   configuration: docs/source/conf.py
 
