@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basic tutorial &mdash; segment-lidar  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="module.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            segment-lidar
+          </a>
+              <div class="version">
+                0.1.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Basic tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sample-data">Sample data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-checkpoints">Model checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">segment-lidar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Basic tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/yarroudh/segment-lidar/blob/main/docs/tutorial.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="basic-tutorial">
+<h1>Basic tutorial<a class="headerlink" href="#basic-tutorial" title="Permalink to this heading"></a></h1>
+<p>In this tutorial, we will learn how to use the <cite>segment_lidar</cite> module for
+automatic unsupervised instance segmentation of LiDAR data.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
+<p>Before getting started, make sure you have the following:</p>
+<ol class="arabic simple">
+<li><p>Python installed on your system.</p></li>
+<li><p>The <cite>segment_lidar</cite> module installed. You can install it using pip:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>segment-lidar
+</pre></div>
+</div>
+<p>For more information on how to install the module, please refer to the <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a> page.</p>
+</section>
+<section id="sample-data">
+<h2>Sample data<a class="headerlink" href="#sample-data" title="Permalink to this heading"></a></h2>
+<p>For testing purposes, you can download a sample data here: <a class="reference external" href="https://drive.google.com/file/d/16EF2aRSvo8u0pXvwtaQ6sjhP5h0sWw3o/view?usp=sharing">pointcloud.las</a>.
+This data was retrieved from <strong>AHN-4</strong>. For more data, please visit <a class="reference external" href="https://ahn.arcgisonline.nl/ahnviewer">AHN-Viewer</a>.</p>
+</section>
+<section id="model-checkpoints">
+<h2>Model checkpoints<a class="headerlink" href="#model-checkpoints" title="Permalink to this heading"></a></h2>
+<p>Click the links below to download the checkpoint for the corresponding Segment-Anything model (SAM) type.</p>
+<ul class="simple">
+<li><p><cite>default</cite> or <cite>vit_h</cite>: <a class="reference external" href="https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth">ViT-H SAM model</a>.</p></li>
+<li><p><cite>vit_l</cite>: <a class="reference external" href="https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth">ViT-L SAM model</a>.</p></li>
+<li><p><cite>vit_b</cite>: <a class="reference external" href="https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth">ViT-B SAM model</a>.</p></li>
+</ul>
+</section>
+<section id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Import the necessary module:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">segment_lidar</span> <span class="kn">import</span> <span class="n">samlidar</span>
+</pre></div>
+</div>
+<p>2. Create an instance of the SamLidar class and specify the path to the checkpoint
+file <strong>ckpt_path</strong> when instantiating the class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">samlidar</span><span class="o">.</span><span class="n">SamLidar</span><span class="p">(</span><span class="n">ckpt_path</span><span class="o">=</span><span class="s2">&quot;sam_vit_h_4b8939.pth&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>3. Read the point cloud data from a <strong>.las/.laz</strong> file using the read method of the
+SamLidar instance. Provide the path to the point cloud file <cite>pointcloud.las</cite> as an argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pointcloud.las&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>4. Apply the Cloth Simulation Filter (CSF) algorithm for ground filtering using the <strong>csf</strong>
+method of the SamLidar instance. This method returns the filtered point cloud <cite>cloud</cite>,
+the non-ground <cite>non_ground</cite> and the ground <cite>ground</cite> indices:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cloud</span><span class="p">,</span> <span class="n">non_ground</span><span class="p">,</span> <span class="n">ground</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">csf</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>5. Perform segmentation using the <strong>segment</strong> method of the SamLidar instance. This
+method requires the filtered point cloud <cite>cloud</cite> as input, and you can optionally provide
+an image path <cite>image_path</cite> and labels path <cite>labels_path</cite> to save the segmentation
+results as an image and labels, respectively. The segment method returns the segmentation
+labels <cite>labels</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">cloud</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;raster.tif&quot;</span><span class="p">,</span> <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;labeled.tif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p>Save results to <strong>.las/.laz</strong> file using the <strong>write</strong> method of the SamLidar instance:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">non_ground</span><span class="o">=</span><span class="n">non_ground</span><span class="p">,</span> <span class="n">ground</span><span class="o">=</span><span class="n">ground</span><span class="p">,</span> <span class="n">segment_ids</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;segmented.las&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, the entire code should look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">segment_lidar</span> <span class="kn">import</span> <span class="n">samlidar</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">samlidar</span><span class="o">.</span><span class="n">SamLidar</span><span class="p">(</span><span class="n">ckpt_path</span><span class="o">=</span><span class="s2">&quot;sam_vit_h_4b8939.pth&quot;</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pointcloud.las&quot;</span><span class="p">)</span>
+<span class="n">cloud</span><span class="p">,</span> <span class="n">non_ground</span><span class="p">,</span> <span class="n">ground</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">csf</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+<span class="n">labels</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">cloud</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;raster.tif&quot;</span><span class="p">,</span> <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;labeled.tif&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">non_ground</span><span class="o">=</span><span class="n">non_ground</span><span class="p">,</span> <span class="n">ground</span><span class="o">=</span><span class="n">ground</span><span class="p">,</span> <span class="n">segment_ids</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;segmented.las&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>7. The resulted point cloud contains a new scalar field called <cite>segment_id</cite>.
+For visualization and further processing, we recommand using <a class="reference external" href="https://www.danielgm.net/cc">CloudCompare</a>.</p>
+<p>The following figure shows the results of the segmentation on the sample data:</p>
+<a class="reference internal image-reference" href="_images/results.gif"><img alt="Segmented point cloud" class="align-center" src="_images/results.gif" style="width: 100%;" /></a>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h2>
+<p>The <cite>segment_lidar</cite> module provides a set of parameters that can be used to configure
+the segmentation process. These parameters are passed to the <cite>SamLidar</cite> class as arguments
+when instantiating the class. The following table shows the parameters and their default values:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Default value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>algorithm</p></td>
+<td><p>“segment-geospatial”</p></td>
+<td><p>Algorithm to use for segmentation. Possible values are: “segment-geospatial”, “segment-anything”.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ckpt_path</p></td>
+<td><p>None</p></td>
+<td><p>Path to the checkpoint file.</p></td>
+</tr>
+<tr class="row-even"><td><p>device</p></td>
+<td><p>“cuda:0”</p></td>
+<td><p>Device to use for inference.</p></td>
+</tr>
+<tr class="row-odd"><td><p>model_type</p></td>
+<td><p>“vit_h”</p></td>
+<td><p>Type of the SAM model. Possible values are: “vit_h”, “vit_l”, “vit_b”.</p></td>
+</tr>
+<tr class="row-even"><td><p>resolution</p></td>
+<td><p>0.25</p></td>
+<td><p>The resolution value of the created image raster.</p></td>
+</tr>
+<tr class="row-odd"><td><p>sam_kwargs</p></td>
+<td><p>False</p></td>
+<td><p>Whether to use the SAM kwargs when using “segment-geospatial” as algorithm</p></td>
+</tr>
+</tbody>
+</table>
+<p>Here is an example of how to configure the parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">samlidar</span><span class="o">.</span><span class="n">SamLidar</span><span class="p">(</span><span class="n">ckpt_path</span><span class="o">=</span><span class="s2">&quot;sam_vit_h_4b8939.pth&quot;</span><span class="p">,</span>
+                          <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;segment-geo-spatial&quot;</span><span class="p">,</span>
+                          <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;vit_h&quot;</span><span class="p">,</span>
+                          <span class="n">resolution</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                          <span class="n">sam_kwargs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additionally, the parameters of <cite>segment-anything</cite> parameters can be configured as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">crop_n_layers</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">model</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">crop_n_points_downscale_factor</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">model</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">min_mask_region_area</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">model</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">points_per_side</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">model</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">pred_iou_thresh</span> <span class="o">=</span> <span class="mf">0.90</span>
+<span class="n">model</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">stability_score_thresh</span> <span class="o">=</span> <span class="mf">0.92</span>
+</pre></div>
+</div>
+<p>Please, refer to the <a class="reference external" href="https://github.com/facebookresearch/segment-anything">segment-anything</a> repository for more details about these parameters.
+See the complete arguments list of the <cite>SamLidar</cite> class <a class="reference internal" href="module.html"><span class="doc">here</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="module.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anass Yarroudh.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
