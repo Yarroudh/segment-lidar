@@ -11,6 +11,7 @@ import supervision as sv
 from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
 from samgeo import SamGeo
 from samgeo.text_sam import LangSAM
+from typing import List, Tuple
 import rasterio
 import laspy
 import cv2
@@ -61,7 +62,7 @@ def cloud_to_image(points: np.ndarray, minx: float, maxx: float, miny: float, ma
 
 
 
-def image_to_cloud(points: np.ndarray, minx: float, maxy: float, image: np.ndarray, resolution: float) -> list[int]:
+def image_to_cloud(points: np.ndarray, minx: float, maxy: float, image: np.ndarray, resolution: float) -> List[int]:
     """
     Converts an image to a point cloud with segment IDs.
 
@@ -239,7 +240,7 @@ class SamLidar:
         return points
 
 
-    def csf(self, points: np.ndarray, class_threshold: float = 0.5, cloth_resolution: float = 0.2, iterations: int = 500, slope_smooth: bool = False) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def csf(self, points: np.ndarray, class_threshold: float = 0.5, cloth_resolution: float = 0.2, iterations: int = 500, slope_smooth: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Applies the CSF (Cloth Simulation Filter) algorithm to filter ground points in a point cloud.
 
@@ -254,7 +255,7 @@ class SamLidar:
         :param slope_smooth: A boolean indicating whether to enable slope smoothing, defaults to False.
         :type slope_smooth: bool, optional
         :return: A tuple containing three arrays: the filtered point cloud, non-ground (filtered) points indinces and ground points indices.
-        :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
+        :rtype: Tuple[np.ndarray, np.ndarray, np.ndarray]
         """
         start = time.time()
         print(f'Applying CSF algorithm...')
@@ -277,7 +278,7 @@ class SamLidar:
         return points, np.asarray(non_ground), np.asarray(ground)
 
 
-    def segment(self, points: np.ndarray, text_prompt: str = None, image_path: str = 'raster.tif', labels_path: str = 'labeled.tif') -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def segment(self, points: np.ndarray, text_prompt: str = None, image_path: str = 'raster.tif', labels_path: str = 'labeled.tif') -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Segments a point cloud based on the provided parameters and returns the segment IDs, original image, and segmented image.
 
@@ -290,7 +291,7 @@ class SamLidar:
         :param labels_path: Path to save the labeled output image, defaults to 'labeled.tif'.
         :type labels_path: str
         :return: A tuple containing the segment IDs, segmented image, and RGB image.
-        :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
+        :rtype: Tuple[np.ndarray, np.ndarray, np.ndarray]
         """
         start = time.time()
         print(f'Segmenting the point cloud...')
