@@ -7,6 +7,7 @@ build:
     pre_install:
       - python -m pip install git+https://github.com/jianboqi/CSF.git
       - python -m pip install -r requirements.txt
+      - python -m "from samgeo import SamGeo; from samgeo.text_sam import LangSAM;"
 
 sphinx:
   configuration: docs/source/conf.py
