@@ -53,7 +53,7 @@ model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=lab
 
 For testing purposes, you can download a sample here: [pointcloud.las](https://drive.google.com/file/d/16EF2aRSvo8u0pXvwtaQ6sjhP5h0sWw3o/view?usp=sharing).
 
-This data was retrieved from **AHN-4**. For more data, please visit [AHN-Viewer](https://ahn.arcgisonline.nl/ahnviewer/)
+This data was retrieved from **AHN-4**. For more data, please visit [AHN-Viewer](https://ahn.arcgisonline.nl/ahnviewer/).
 
 ## Related repositories
 
@@ -62,7 +62,7 @@ We would like to express our acknowledgments to the creators of:
 - [segment-anything](https://github.com/facebookresearch/segment-anything)
 - [segment-geospatial](https://github.com/opengeos/segment-geospatial)
 
-Please, visit these repositories for more information about image automatic segmentation using SAM from Meta AI.
+Please, visit these repositories for more information about image raster automatic segmentation using SAM from Meta AI.
 
 ## License
 
