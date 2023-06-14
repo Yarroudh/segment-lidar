@@ -3,6 +3,7 @@
 # segment-lidar
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://github.com/Yarroudh/ZRect3D/blob/main/LICENSE)
 [![Geomatics Unit of ULiege - Development](https://img.shields.io/badge/Geomatics_Unit_of_ULiege-Development-2ea44f)](http://geomatics.ulg.ac.be/)
+[![read - documentation](https://img.shields.io/static/v1?label=read&message=documentation&color=2ea44f)](https://yarroudh.gitbook.io/segment-lidar/)
 
 *Python package for segmenting LiDAR data using Segment-Anything Model (SAM) from Meta Research.*
 
