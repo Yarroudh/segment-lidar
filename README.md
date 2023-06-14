@@ -32,11 +32,11 @@ Please, note that the actual version is always under tests. If you find any issu
 
 ## Documentation
 
-If you are using `segment-lidar`, we highly recommend that you take the time to read the [documentation](segment-lidar.readthedocs.io). The documentation is an essential resource that will help you understand the features and functionality of our software, as well as provide guidance on how to use it effectively.
+If you are using `segment-lidar`, we highly recommend that you take the time to read the [documentation](segment-lidar.readthedocs.io). The documentation is an essential resource that will help you understand the features of the package, as well as provide guidance on how to use it effectively.
 
 ## Basic tutorial
 
-A basic tutorial is available [here]().
+A basic tutorial is available [here](segment-lidar.readthedocs.io/en/latest/tutorial.html).
 You can also refer to API for more information about different parameters.
 
 ```python
