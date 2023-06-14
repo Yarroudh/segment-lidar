@@ -45,7 +45,7 @@ from segment_lidar import samlidar
 model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
 points = model.read("pointcloud.las")
 cloud, non_ground, ground = model.csf(points)
-labels, *_ = instance.segment(points=cloud, image_path="raster.tif", labels_path="labeled.tif")
+labels, *_ = model.segment(points=cloud, image_path="raster.tif", labels_path="labeled.tif")
 model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=labels, save_path="segmented.las")
 ```
 
