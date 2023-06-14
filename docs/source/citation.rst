@@ -20,4 +20,4 @@ conditions associated with the use of this repository.
      url = {https://github.com/Yarroudh/segment-lidar}
    }
 
-Yarroudh, A. (2023). LiDAR Automatic Unsupervised Segmentation using Segment-Anything Model (SAM) from Meta AI [GitHub repository]. Retrieved from `<https://github.com/Yarroudh/segment-lidar>`__
+Yarroudh, A. (2023). LiDAR Automatic Unsupervised Segmentation using Segment-Anything Model (SAM) from Meta AI [GitHub repository]. Retrieved from `<https://github.com/Yarroudh/segment-lidar>`__.
