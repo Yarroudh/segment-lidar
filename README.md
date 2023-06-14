@@ -28,7 +28,7 @@ cd segment-lidar
 python setup.py install
 ```
 
-Please, note that the actual version is a pre-release and it's under tests. If you find any issues or bugs, please report them in [issues](https://github.com/Yarroudh/segment-lidar/issues) section. The second version will have more advanced features and fonctionalities.
+Please, note that the actual version is always under tests. If you find any issues or bugs, please report them in [issues](https://github.com/Yarroudh/segment-lidar/issues) section. The second version should implement more advanced features and fonctionalities.
 
 ## Documentation
 
