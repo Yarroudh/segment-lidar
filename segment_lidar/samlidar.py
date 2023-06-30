@@ -387,9 +387,10 @@ class SamLidar:
 
         print(f'Writing the segmented point cloud to {save_path}...')
 
+        header = laspy.LasHeader(point_format=3, version="1.3")
+        lidar = laspy.LasData(header=header)
+        
         if ground is not None:
-            header = laspy.LasHeader(point_format=3, version="1.3")
-            lidar = laspy.LasData(header=header)
             indices = np.concatenate((non_ground, ground))
             lidar.xyz = points[indices]
             segment_ids = np.append(segment_ids, np.full(len(ground), -1))
