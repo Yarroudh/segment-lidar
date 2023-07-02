@@ -23,7 +23,6 @@ import rasterio
 import laspy
 import pdal
 import cv2
-from zmq import has
 
 
 # file formats supported
