@@ -41,25 +41,23 @@ def cloud_to_image(points: np.ndarray, minx: float, maxx: float, miny: float, ma
     :rtype: ndarray
     :raises ValueError: If the shape of the points array is not valid or if any parameter is invalid.
     """
+    if points.shape[1] == 3:
+        colors = np.array([255, 255, 255])
+    else:
+        colors = points[:, -3:]
+
+    x = (points[:, 0] - minx) / resolution
+    y = (maxy - points[:, 1]) / resolution
+    pixel_x = np.floor(x).astype(int)
+    pixel_y = np.floor(y).astype(int)
+
     width = int((maxx - minx) / resolution) + 1
     height = int((maxy - miny) / resolution) + 1
 
     image = np.zeros((height, width, 3), dtype=np.uint8)
-    for point in points:
-        if points.shape[1] == 3:
-            x, y, *_ = point
-            r, g, b = (255, 255, 255)
-            pixel_x = int((x - minx) / resolution)
-            pixel_y = int((maxy - y) / resolution)
-            image[pixel_y, pixel_x] = [r, g, b]
-        else:
-            x, y, *_ = point
-            r, g, b = point[-3:]
-            pixel_x = int((x - minx) / resolution)
-            pixel_y = int((maxy - y) / resolution)
-            image[pixel_y, pixel_x] = [r, g, b]
-    return image
+    image[pixel_y, pixel_x] = colors
 
+    return image
 
 
 def image_to_cloud(points: np.ndarray, minx: float, maxy: float, image: np.ndarray, resolution: float) -> List[int]:
@@ -80,20 +78,27 @@ def image_to_cloud(points: np.ndarray, minx: float, maxy: float, image: np.ndarr
     unique_values = {}
     image = np.asarray(image)
 
-    for point in points:
-        x, y, *_ = point
-        pixel_x = int((x - minx) / resolution)
-        pixel_y = int((maxy - y) / resolution)
-        if not (0 <= pixel_x < image.shape[1]) or not (0 <= pixel_y < image.shape[0]):
-            segment_ids.append(-1)
-            continue
-        rgb = image[pixel_y, pixel_x]
+    # Calculate pixel coordinates for all points
+    x = (points[:, 0] - minx) / resolution
+    y = (maxy - points[:, 1]) / resolution
+    pixel_x = np.floor(x).astype(int)
+    pixel_y = np.floor(y).astype(int)
 
-        if rgb not in unique_values:
-            unique_values[rgb] = len(unique_values)
+    # Mask points outside image bounds
+    out_of_bounds = (pixel_x < 0) | (pixel_x >= image.shape[1]) | (pixel_y < 0) | (pixel_y >= image.shape[0])
+    segment_ids.extend([-1] * np.sum(out_of_bounds))
 
-        id = unique_values[rgb]
-        segment_ids.append(id)
+    # Extract RGB values for valid points
+    valid_points = ~out_of_bounds
+    rgb = image[pixel_y[valid_points], pixel_x[valid_points]]
+
+    # Map RGB values to unique segment IDs
+    for rgb_val in rgb:
+        if rgb_val not in unique_values:
+            unique_values[rgb_val] = len(unique_values)
+
+        segment_ids.append(unique_values[rgb_val])
+
     return segment_ids
 
 
@@ -148,7 +153,7 @@ class SamLidar:
         self.device = torch.device('cuda:0') if device == 'cuda:0' and torch.cuda.is_available() else torch.device('cpu')
         self.mask = mask()
 
-        if sam_kwargs:
+        if sam_kwargs or algorithm == 'segment-anything':
             self.mask_generator = SamAutomaticMaskGenerator(
                 model=sam_model_registry[model_type](checkpoint=ckpt_path).to(device=self.device),
                 crop_n_layers=self.mask.crop_n_layers,
@@ -326,14 +331,28 @@ class SamLidar:
             sam = sam_model_registry[self.model_type](checkpoint=self.ckpt_path)
             sam.to(self.device)
 
-            image_rgb = image_rgb.reshape((image_rgb.shape[1], image_rgb.shape[2], image_rgb.shape[0]))
+            image_rgb = image_rgb.transpose(1, 2, 0)
             result = self.mask_generator.generate(image_rgb)
             mask_annotator = sv.MaskAnnotator()
             detections = sv.Detections.from_sam(result)
-            segmented_image = mask_annotator.annotate(image_rgb, detections)
+            num_masks, height, width = detections.mask.shape
+            segmented_image = np.zeros((height, width), dtype=np.uint8)
+            for i in range(num_masks):
+                mask = detections.mask[i]
+                segmented_image[mask] = i
 
-            cv2.imwrite(labels_path, segmented_image)
             print(f'- Saving segmented image...')
+            with rasterio.open(
+                labels_path,
+                'w',
+                driver='GTiff',
+                width=segmented_image.shape[1],
+                height=segmented_image.shape[0],
+                count=1,
+                dtype=segmented_image.dtype
+            ) as dst:
+                dst.write(segmented_image, 1)
+
 
         elif self.algorithm == 'segment-geospatial':
             if text_prompt is not None:
@@ -390,7 +409,7 @@ class SamLidar:
 
         header = laspy.LasHeader(point_format=3, version="1.3")
         lidar = laspy.LasData(header=header)
-        
+
         if ground is not None:
             indices = np.concatenate((non_ground, ground))
             lidar.xyz = points[indices]

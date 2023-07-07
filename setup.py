@@ -18,7 +18,7 @@ class CustomInstallCommand(install):
 
 setup(
     name="segment-lidar",
-    version='0.1.7',
+    version='0.1.8',
     description="A package for segmenting LiDAR data using Segment-Anything Model (SAM) from Meta AI Research.",
     long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
