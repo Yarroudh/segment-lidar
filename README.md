@@ -40,6 +40,19 @@ If you are using `segment-lidar`, we highly recommend that you take the time to 
 A basic tutorial is available [here](https://yarroudh.gitbook.io/segment-lidar/tutorial/basic-usage).
 You can also refer to API for more information about different parameters.
 
+### Without ground filtering
+
+```python
+from segment_lidar import samlidar
+
+model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
+points = model.read("pointcloud.las")
+labels, *_ = model.segment(points=points, image_path="raster.tif", labels_path="labeled.tif")
+model.write(points=points, segment_ids=labels, save_path="segmented.las")
+```
+
+### With ground filtering
+
 ```python
 from segment_lidar import samlidar
 
