@@ -5,7 +5,7 @@
 [![Geomatics Unit of ULiege - Development](https://img.shields.io/badge/Geomatics_Unit_of_ULiege-Development-2ea44f)](http://geomatics.ulg.ac.be/)
 [![read - documentation](https://img.shields.io/static/v1?label=read&message=documentation&color=orange)](https://yarroudh.gitbook.io/segment-lidar/)
 
-*Python package for segmenting LiDAR data using Segment-Anything Model (SAM) from Meta AI.*
+*Python package for segmenting aerial LiDAR data using Segment-Anything Model (SAM) from Meta AI.*
 
 This package is specifically designed for **unsupervised instance segmentation** of **aerial LiDAR data**. It brings together the power of the **Segment-Anything Model (SAM)** developed by [Meta Research](https://github.com/facebookresearch) and the **segment-geospatial** package from [Open Geospatial Solutions](https://github.com/opengeos). Whether you're a researcher, developer, or a geospatial enthusiast, segment-lidar opens up new possibilities for automatic processing of aerial LiDAR data and enables further applications. We encourage you to explore our code, contribute to its development and leverage its capabilities for your segmentation tasks.
 
@@ -39,6 +39,19 @@ If you are using `segment-lidar`, we highly recommend that you take the time to 
 
 A basic tutorial is available [here](https://yarroudh.gitbook.io/segment-lidar/tutorial/basic-usage).
 You can also refer to API for more information about different parameters.
+
+### Without ground filtering
+
+```python
+from segment_lidar import samlidar
+
+model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
+points = model.read("pointcloud.las")
+labels, *_ = model.segment(points=points, image_path="raster.tif", labels_path="labeled.tif")
+model.write(points=points, segment_ids=labels, save_path="segmented.las")
+```
+
+### With ground filtering
 
 ```python
 from segment_lidar import samlidar

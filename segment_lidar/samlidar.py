@@ -174,6 +174,7 @@ class SamLidar:
         self.sam_geo = SamGeo(
             model_type=self.model_type,
             checkpoint=self.ckpt_path,
+            device=self.device,
             sam_kwargs=self.sam_kwargs
         )
 
@@ -397,7 +398,7 @@ class SamLidar:
             lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
             lidar.segment_id = segment_ids
         else:
-            lidar.points = points
+            lidar.xyz = points
             lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
             lidar.segment_id = segment_ids
 
