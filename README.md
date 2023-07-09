@@ -69,6 +69,45 @@ For testing purposes, you can download a sample here: [pointcloud.las](https://d
 
 This data was retrieved from **AHN-4**. For more data, please visit [AHN-Viewer](https://ahn.arcgisonline.nl/ahnviewer/).
 
+## Docker Image
+
+**segment-lidar** is also available as [Docker image](https://hub.docker.com/r/yarroudh/segment-lidar).
+
+These are the steps to run `segment-lidar` as a Docker container:
+
+1. First pull the image using the <code>docker pull</code> command:
+
+```bash
+docker pull yarroudh/segment-lidar
+```
+
+2. To run the Docker container and mount your data and script file inside it, use the <code>docker run</code> command with the <code>-v</code> option to specify the path to the host directory and the path to the container directory where you want to mount the data folder. For example:
+
+```bash
+docker run -d -v ABSOLUTE_PATH_TO_HOST_DATA:/home/user yarroudh/segment-lidar
+```
+
+This command will start a Docker container in detached mode, mount the **ABSOLUTE_PATH_TO_HOST_DATA** directory on the host machine to the **/home/user/data** directory inside the container, and run the <code>yarroudh/segment-lidar</code> image. Do not change the path of the directory inside the container.
+
+3. Find the container ID and copy it. You can use the <code>docker ps</code> command to list all running containers and their IDs.
+4. Launch a command inside the container using <code>docker exec</code>, use the container ID or name and the command you want to run. For example:
+
+```bash
+docker exec CONTAINER_ID python SCRIPT_FILE
+```
+
+5. To copy the output of the command from the container to a local path, use the <code>docker cp</code> command with the container ID or name, the path to the file inside the container, and the path to the destination on the host machine. For example:
+
+```bash
+docker cp CONTAINER_ID:/home/user/PATH_TO_OUTPUT PATH_ON_HOST_MACHINE
+```
+
+6. Finally, after executing all the commands and copying the results to your local machine, you can stop the Docker container using the <code>docker stop</code> command followed by the container ID or name:
+
+```bash
+docker stop CONTAINER_ID
+```
+
 ## Related repositories
 
 We would like to express our acknowledgments to the creators of:
