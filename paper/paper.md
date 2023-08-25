@@ -2,6 +2,7 @@
 title: 'LiDAR Automatic Unsupervised Segmentation using Segment-Anything Model'
 tags:
   - Python
+  - Segment-Anything Model
   - LiDAR
   - Machine Learning
   - Unsupervised segmentation
@@ -9,18 +10,15 @@ authors:
   - name: Anass Yarroudh
     orcid: 0000-0003-1387-8288
     corresponding: true
-    equal-contrib: true
     affiliation: 1
   - name: Abderrazzaq Kharroubi
     orcid: 0000-0001-7712-6208
-    equal-contrib: true
     affiliation: 1
   - name: Roland Billen
     orcid: 0000-0002-3101-8057
-    equal-contrib: true
     affiliation: 1
 affiliations:
- - name: Geomatics Unit, University of Liège, Batiment B5a, Allée du six Août 19, 4000 Liège, Belgium
+ - name: Geomatics Unit, University of Liège, Allée du six Août 19, 4000 Liège, Belgium
    index: 1
 date: 31 August 2023
 bibliography: paper.bib
