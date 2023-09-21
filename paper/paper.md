@@ -1,5 +1,5 @@
 ---
-title: 'LiDAR Automatic Unsupervised Segmentation using Segment-Anything Model'
+title: 'Automatic Unsupervised LiDAR-Segmentation using Segment-Anything Model'
 tags:
   - Python
   - Segment-Anything Model
