@@ -78,7 +78,7 @@ $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, 
 
 ## Step 2: Inference on the generated image
 
-
+The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023].
 
 ## Step 3: Reprojection of results on the 3D point cloud
 
