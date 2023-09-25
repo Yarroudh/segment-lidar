@@ -39,7 +39,7 @@ For optimization purposes, `segment-lidar` enables using `Fast Segment Anything 
 
 # Overview of the method
 
-The main idea of using `SAM` is to use unsupervised image-segmentation to automatically find and separate different objects in LiDAR point clouds. The process can be divided into three main steps:
+The main idea behind using `SAM` is to make use of unsupervised image-segmentation to automatically find and separate different objects in LiDAR point clouds. The process can be divided into three main steps:
 
 ## Step 1: Projection of the 3D point cloud into a two-dimensional image
 
@@ -59,7 +59,7 @@ The projection equations for the top face are then:
 $u = X$
 $v = Y$
 
-Similarly,these equations can be adapted for other faces of the cube, adjusting the coordinates based on the view.
+Similarly, these equations are adapted for other faces of the cube, adjusting the coordinates based on the view.
 
 2. Panoramic View:
 
@@ -78,8 +78,11 @@ $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, 
 
 ## Step 2: Inference on the generated image
 
+
+
 ## Step 3: Reprojection of results on the 3D point cloud
 
+In the final step of our methodology, we seamlessly reprojet the instance segmentation results onto the original point cloud. This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
 
 # Use of the package
 
