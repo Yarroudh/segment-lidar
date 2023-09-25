@@ -71,8 +71,8 @@ $\rho$ represents the radial distance from the center.
 
 The equirectangular projection equations are:
 
-$$u = (\Theta - \Theta_{min})\times \frac{w}{(\Theta_{max} - \Theta_{min})}$$
-$$v = (\Phi - \Phi_{min})\times \frac{h}{(\Phi_{max} - \Phi_{min})}$$
+$$u = w\times \frac{\Theta - \Theta_{min}}{\Theta_{max} - \Theta_{min}}$$
+$$v = h\times \frac{\Phi - \Phi_{min}}{\Phi_{max} - \Phi_{min}}$$
 
 $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, and $\Phi_{min}$ and $\Phi_{min}$ are the minimum and maximum polar angles. `w` and `h` are the dimensions of the image.
 
