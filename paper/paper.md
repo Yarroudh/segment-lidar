@@ -57,7 +57,6 @@ As shown in Figure 1, for the top face:
 The projection equations for the top face are then:
 
 $$u = X$$
-
 $$v = Y$$
 
 Similarly, these equations are adapted for other faces of the cube, adjusting the coordinates based on the view.
@@ -72,9 +71,8 @@ $\rho$ represents the radial distance from the center.
 
 The equirectangular projection equations are:
 
-$$u = (\Theta - \Theta_{min}) * (w / (\Theta_{max} - \Theta_{min}))$$
-
-$$v = (\Phi - \Phi_{min}) * (h / (\Phi_{max} - \Phi_{min}))$$
+$$u = \frac{\Theta - \Theta_{min}}{w / (\Theta_{max} - \Theta_{min})}$$
+$$v = \frac{\Phi - \Phi_{min}}{h / (\Phi_{max} - \Phi_{min})}$$
 
 $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, and $\Phi_{min}$ and $\Phi_{min}$ are the minimum and maximum polar angles. `w` and `h` are the dimensions of the image.
 
