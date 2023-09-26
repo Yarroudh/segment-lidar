@@ -92,20 +92,82 @@ In the final step of our methodology, we seamlessly reprojet the instance segmen
 
 # Use of the package
 
+## Installation
 
-# Citations
+The package is available as a Python library and can be installed directly from [PyPI](https://pypi.org/project/segment-lidar/). We recommand using `Python>=3.9`. It is also required to install [PyTorch](https://pytorch.org/) before installing `segment-lidar`.
 
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
+The easiest way to install the package in a Python environment is tu run the following command:
 
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for @fidgit.
+```bash
+pip install segment-lidar
+```
 
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
+It is also possible to install it from source by running these commands:
+
+```bash
+git clone https://github.com/Yarroudh/segment-lidar
+cd segment-lidar
+python setup.py install
+```
+
+## Basic usage
+
+1. Import the necessary modules:
+
+```python
+from segment_lidar import samlidar, view
+```
+
+2. Create an instance of the SamLidar class and specify the path to the checkpoint file **ckpt_path** when instantiating the class:
+
+```python
+model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
+```
+
+3. Define the view by choosing either a **CubicView** or **PanromaicView**. The Cubic View offers a default view point, which is the **top** view, among its six available viewpoints:
+
+```python
+view = view.CubicView(viewpoint='top')
+```
+
+4. Read the point cloud data from a **.las/.laz** file using the read method of the SamLidar instance. Provide the path to the point cloud file pointcloud.las as an argument:
+
+```python
+points = model.read("pointcloud.las")
+```
+
+5. Apply the Cloth Simulation Filter (CSF) algorithm for ground filtering using the **csf** method of the SamLidar instance. This method returns the filtered point cloud cloud, the non-ground non_ground and the ground ground indices:
+
+```python
+cloud, non_ground, ground = model.csf(points)
+```
+
+6. Perform segmentation using the **segment** method of the SamLidar instance. This method requires the filtered (or not) point cloud as input, and you can optionally provide an **image_path** and **labels_path// to save the projection and segmentation results:
+
+```python
+labels, *_ = model.segment(points=cloud, image_path="raster.tif", labels_path="labeled.tif")
+```
+
+7. Save results to **.las/.laz** file using the **write** method of the SamLidar instance:
+
+```python
+model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=labels, save_path="segmented.las")
+```
+
+As shown in Figue, the resulted point cloud contains a new scalar field called **segment_id**.
+
+It's also possible to use **segment-lidar** without ground filtering as follow:
+
+```python
+from segment_lidar import samlidar
+
+model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
+points = model.read("pointcloud.las")
+labels, *_ = model.segment(points=points, image_path="raster.tif", labels_path="labeled.tif")
+model.write(points=points, segment_ids=labels, save_path="segmented.las")
+```
+
+If the panoramic view is required, the **PanoramicView()** class can be used.
 
 # Figures
 
