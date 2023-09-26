@@ -41,7 +41,13 @@ For optimization purposes, `segment-lidar` enables using `Fast Segment Anything 
 
 The main idea behind using `SAM` is to make use of unsupervised image-segmentation to automatically find and separate different objects in LiDAR point clouds. The process can be divided into three main steps:
 
-## Step 1: Projection of the 3D point cloud into a two-dimensional image
+## Step 1: Ground filtering using Cloth Simulation Filter
+
+The ground filtering is optional but preffered for aerial LiDAR data with top viewpoint. It serves two primary purposes that significantly enhance the accuracy and reliability of object detection and segmentation. First, ground filtering helps improve the detection of objects within the image by eliminating the interference of ground points. This is especially vital for identifying objects such as buildings, vehicles, and infrastructure, as it allows for a clearer focus on target objects against a clutter-free background. Second, ground filtering prevents the projection of segmentation results onto ground points, espacially for tall structures like trees and poles.
+
+Our package uses the Cloth Simulation Filter (CSF) to separate the ground points from non-ground points (Figure 1). The algorithm was proposed by `@zhang:2016` as an implementation of the Cloth Simulation algorithm used in 3D computer graphics to simulate fabric attached to an object.
+
+## Step 2: Projection of the 3D point cloud into a two-dimensional image
 
 This projection can be based on various views, including cubic views (top, bottom, left, right, front, back) and panoramic views (360°).
 
@@ -78,7 +84,7 @@ $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, 
 
 ## Step 2: Inference on the generated image
 
-The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023].
+The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023]. Additionally, segment-geospatial [@wu:2023] is implemented to leverage SAM for geospatial analysis by enabling users to achieve results with minimal parameters tuning.
 
 ## Step 3: Reprojection of results on the 3D point cloud
 
