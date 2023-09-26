@@ -26,16 +26,15 @@ bibliography: paper.bib
 
 # Summary
 
-To be filled.
-
-# Statement of need
-
 `segment-lidar` is a Python package for automatic unsupervised segmentation of aerial LiDAR data. It proposes an image-based approach for segmenting aerial point clouds using `Segment-Anthing Model (SAM)` package from [Meta AI](https://github.com/facebookresearch). (to complete by justifying why do we need unsupervised segmentation and how SAM is powerful)
 
 The API for `segment-lidar` provides functions and classes to define the segmentation model and its paramaters, and also to handle transformation of 3D point clouds into images. `segment-lidar` also relies on other packages that make use of `SAM` for instance segmentation of images. This includes the `segment-geospatial` package from [Open Geospatial Solutions](https://github.com/opengeos) for segmenting geospatial data and the `Grounded-SAM` package from [The International Digital Economy Academy Research (IDEA-Research)](https://github.com/IDEA-Research) that combines `SAM` with `GroundingDINO` to detect and segment anything with text prompts. The `GroundingDINO` package was introduced by IDEA-Research as an implementation of the paper "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection".
 
 For optimization purposes, `segment-lidar` enables using `Fast Segment Anything Model (FastSAM)` as an alternative to `SAM` original API. The `FastSAM` is a Convolutional Neural Network (CNN) `SAM` that was trained using only 2% of the `SA-1B` dataset published by `SAM` authors. It achieves comparable performance at 50x higher run-time speed.
 
+# Statement of need
+
+To be filled.
 
 # Overview of the method
 
@@ -67,7 +66,7 @@ $$v = Y$$
 
 Similarly, these equations are adapted for other faces of the cube, adjusting the coordinates based on the view.
 
-![Different view points of the Cubic View.\label{fig:cubicview}](figures/cubicview.png)
+![Different viewpoints of the Cubic View.\label{fig:cubicview}](figures/cubicview.png)
 
 2. Panoramic View:
 
@@ -84,13 +83,15 @@ $$v = h\times \frac{\Phi - \Phi_{min}}{\Phi_{max} - \Phi_{min}}$$
 
 $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, and $\Phi_{min}$ and $\Phi_{min}$ are the minimum and maximum polar angles. `w` and `h` are the dimensions of the image.
 
-## Step 2: Inference on the generated image
+## Step 3: Inference on the generated image
 
 The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023]. Additionally, segment-geospatial [@wu:2023] is implemented to leverage SAM for geospatial analysis by enabling users to achieve results with minimal parameters tuning.
 
-## Step 3: Reprojection of results on the 3D point cloud
+## Step 4: Reprojection of results on the 3D point cloud
 
-In the final step of our methodology, we seamlessly reprojet the instance segmentation results onto the original point cloud. This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
+In the final step of our methodology, we seamlessly reprojet the instance segmentation results onto the original point cloud (\autoref{fig:results}). This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
+
+![Segmented point cloud.\label{fig:results}](figures/results.png)
 
 # Use of the package
 
@@ -167,31 +168,6 @@ model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
 points = model.read("pointcloud.las")
 labels, *_ = model.segment(points=points, image_path="raster.tif", labels_path="labeled.tif")
 model.write(points=points, segment_ids=labels, save_path="segmented.las")
-```
-
-## Configuration
-
-The **SamLidar** instance provides a set of parameters that can be used to configure the segmentation process. These parameters are passed as arguments when instantiating the class. The following table shows the parameters and their default values:
-
-The following example shows how to define these parameters:
-
-```python
-model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth",
-                          algorithm="segment-geo-spatial",
-                          model_type="vit_h",
-                          resolution=0.5,
-                          sam_kwargs=True)
-```
-
-Additionally, the parameters of **Segment Anything Model (SAM)** can be configured as follows:
-
-```python
-model.mask.crop_n_layers = 1
-model.mask.crop_n_points_downscale_factor = 2
-model.mask.min_mask_region_area = 500
-model.mask.points_per_side = 10
-model.mask.pred_iou_thresh = 0.90
-model.mask.stability_score_thresh = 0.92
 ```
 
 # Figures
