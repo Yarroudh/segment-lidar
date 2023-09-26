@@ -26,7 +26,7 @@ bibliography: paper.bib
 
 # Summary
 
-To be filled
+To be filled.
 
 # Statement of need
 
@@ -167,7 +167,30 @@ labels, *_ = model.segment(points=points, image_path="raster.tif", labels_path="
 model.write(points=points, segment_ids=labels, save_path="segmented.las")
 ```
 
-If the panoramic view is required, the **PanoramicView()** class can be used.
+## Configuration
+
+The **SamLidar** instance provides a set of parameters that can be used to configure the segmentation process. These parameters are passed as arguments when instantiating the class. The following table shows the parameters and their default values:
+
+The following example shows how to define these parameters:
+
+```python
+model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth",
+                          algorithm="segment-geo-spatial",
+                          model_type="vit_h",
+                          resolution=0.5,
+                          sam_kwargs=True)
+```
+
+Additionally, the parameters of **Segment Anything Model (SAM)** can be configured as follows:
+
+```python
+model.mask.crop_n_layers = 1
+model.mask.crop_n_points_downscale_factor = 2
+model.mask.min_mask_region_area = 500
+model.mask.points_per_side = 10
+model.mask.pred_iou_thresh = 0.90
+model.mask.stability_score_thresh = 0.92
+```
 
 # Figures
 
