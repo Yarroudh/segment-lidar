@@ -53,7 +53,7 @@ This projection can be based on various views, including cubic views (top, botto
 
 1. Cubic Projection:
 
-In a cubic projection, each face of the cube represents a different view. The 3D coordinates (X, Y, Z) are projected onto the 2D coordinates (u, v) on the image plane.
+In a cubic projection, each face of the cube represents a different view (\autoref{fig:cubicview}). The 3D coordinates (X, Y, Z) are projected onto the 2D coordinates (u, v) on the image plane.
 
 As shown in Figure 1, for the top face:
 
@@ -66,6 +66,8 @@ $$u = X$$
 $$v = Y$$
 
 Similarly, these equations are adapted for other faces of the cube, adjusting the coordinates based on the view.
+
+![Different view points of the Cubic View.\label{fig:cubicview}](figure.png)
 
 2. Panoramic View:
 
