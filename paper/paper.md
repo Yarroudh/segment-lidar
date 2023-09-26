@@ -67,7 +67,7 @@ $$v = Y$$
 
 Similarly, these equations are adapted for other faces of the cube, adjusting the coordinates based on the view.
 
-![Different view points of the Cubic View.\label{fig:cubicview}](figure.png)
+![Different view points of the Cubic View.\label{fig:cubicview}](figures/cubicview.png)
 
 2. Panoramic View:
 
