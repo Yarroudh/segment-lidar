@@ -34,6 +34,8 @@ For optimization purposes, `segment-lidar` enables using `Fast Segment Anything 
 
 # Statement of need
 
+The swift advancement of data acquisition technologies like LiDAR sensors and depth cameras has led to the widespread use of 3D point cloud data, which, in turn, has started a growing interest among researchers in the field of 3D scene comprehension. However, the comprehension of such unstructured, disordered and spare point clouds yields technical challenges @su:2022.
+
 Image-based segmentation is generally considered easier than 3D point cloud segmentation.
 
 # Overview of the method
@@ -97,8 +99,6 @@ In the final step of our methodology, we seamlessly reproject the instance segme
 
 # Use of the package
 
-## Installation
-
 The package is available as a Python library and can be installed directly from [PyPI](https://pypi.org/project/segment-lidar/). We recommend using `Python>=3.9`. It is also required to install [PyTorch](https://pytorch.org/) before installing `segment-lidar`.
 
 The easiest way to install the package in a Python environment is tu run the following command:
@@ -115,61 +115,8 @@ cd segment-lidar
 python setup.py install
 ```
 
-## Basic usage
+The usage of `SamLidar` is comprehensively detailed in the accompanying documentation, which includes tutorials providing step-by-step instructions.
 
-1. Import the necessary modules:
-
-```python
-from segment_lidar import samlidar, view
-```
-
-2. Create an instance of the SamLidar class and specify the path to the checkpoint file **ckpt_path** when instantiating the class:
-
-```python
-model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
-```
-
-3. Define the view by choosing either a **CubicView** or **PanromaicView**. The Cubic View offers a default view point, which is the **top** view, among its six available viewpoints:
-
-```python
-view = view.CubicView(viewpoint='top')
-```
-
-4. Read the point cloud data from a **.las/.laz** file using the read method of the SamLidar instance. Provide the path to the point cloud file pointcloud.las as an argument:
-
-```python
-points = model.read("pointcloud.las")
-```
-
-5. Apply the Cloth Simulation Filter (CSF) algorithm for ground filtering using the **csf** method of the SamLidar instance. This method returns the filtered point cloud cloud, the non-ground non_ground and the ground ground indices:
-
-```python
-cloud, non_ground, ground = model.csf(points)
-```
-
-6. Perform segmentation using the **segment** method of the SamLidar instance. This method requires the filtered (or not) point cloud as input, and you can optionally provide an **image_path** and **labels_path// to save the projection and segmentation results:
-
-```python
-labels, *_ = model.segment(points=cloud, image_path="raster.tif", labels_path="labeled.tif")
-```
-
-7. Save results to **.las/.laz** file using the **write** method of the SamLidar instance:
-
-```python
-model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=labels, save_path="segmented.las")
-```
-
-As shown in Figue, the resulted point cloud contains a new scalar field called **segment_id**.
-
-It's also possible to use **segment-lidar** without ground filtering as follow:
-
-```python
-from segment_lidar import samlidar
-
-model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
-points = model.read("pointcloud.las")
-labels, *_ = model.segment(points=points, image_path="raster.tif", labels_path="labeled.tif")
-model.write(points=points, segment_ids=labels, save_path="segmented.las")
-```
+The package also offers an API comprising classes and functions to ensure interoperability with other libraries for numerical computing, image processing and machine learning.
 
 # References
