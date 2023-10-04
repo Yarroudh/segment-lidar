@@ -1,5 +1,5 @@
 ---
-title: 'Automatic Unsupervised LiDAR-Segmentation using Segment-Anything Model'
+title: 'SamLidar: Automatic Unsupervised LiDAR-Segmentation using Segment-Anything Model (SAM)'
 tags:
   - Python
   - Segment-Anything Model
@@ -26,23 +26,23 @@ bibliography: paper.bib
 
 # Summary
 
-`segment-lidar` is a Python package for automatic unsupervised segmentation of aerial LiDAR data. It proposes an image-based approach for segmenting aerial point clouds using `Segment-Anthing Model (SAM)` package from [Meta AI](https://github.com/facebookresearch). (to complete by justifying why do we need unsupervised segmentation and how SAM is powerful)
+`SamLidar` is a Python package for automatic unsupervised segmentation of aerial LiDAR data. It proposes an image-based approach for segmenting aerial point clouds using `Segment-Anthing Model (SAM)` package from [Meta AI](https://github.com/facebookresearch). (to complete by justifying why do we need unsupervised segmentation and how SAM is powerful)
 
-The API for `segment-lidar` provides functions and classes to define the segmentation model and its paramaters, and also to handle transformation of 3D point clouds into images. `segment-lidar` also relies on other packages that make use of `SAM` for instance segmentation of images. This includes the `segment-geospatial` package from [Open Geospatial Solutions](https://github.com/opengeos) for segmenting geospatial data and the `Grounded-SAM` package from [The International Digital Economy Academy Research (IDEA-Research)](https://github.com/IDEA-Research) that combines `SAM` with `GroundingDINO` to detect and segment anything with text prompts. The `GroundingDINO` package was introduced by IDEA-Research as an implementation of the paper "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection".
+The API for `segment-lidar` provides functions and classes to define the segmentation model and its parameters, and also to handle transformation of 3D point clouds into images. `segment-lidar` also relies on other packages that make use of `SAM` for instance segmentation of images. This includes the `segment-geospatial` package from [Open Geospatial Solutions](https://github.com/opengeos) for segmenting geospatial data and the `Grounded-SAM` package from [The International Digital Economy Academy Research (IDEA-Research)](https://github.com/IDEA-Research) that combines `SAM` with `GroundingDINO` to detect and segment anything with text prompts. The `GroundingDINO` package was introduced by IDEA-Research as an implementation of the paper "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection".
 
 For optimization purposes, `segment-lidar` enables using `Fast Segment Anything Model (FastSAM)` as an alternative to `SAM` original API. The `FastSAM` is a Convolutional Neural Network (CNN) `SAM` that was trained using only 2% of the `SA-1B` dataset published by `SAM` authors. It achieves comparable performance at 50x higher run-time speed.
 
 # Statement of need
 
-To be filled.
+Image-based segmentation is generally considered easier than 3D point cloud segmentation.
 
 # Overview of the method
 
-The main idea behind using `SAM` is to make use of unsupervised image-segmentation to automatically find and separate different objects in LiDAR point clouds. The process can be divided into three main steps:
+The main aim of using `SAM` is to automatically identify and separate different instances in 3D LiDAR data through automated image segmentation. The process can be divided into four main steps:
 
-## Step 1: Ground filtering using Cloth Simulation Filter
+## Step 1: Ground filtering using Cloth Simulation Filter [Optional]
 
-The ground filtering is optional but preffered for aerial LiDAR data with top viewpoint. It serves two primary purposes that significantly enhance the accuracy and reliability of object detection and segmentation. First, ground filtering helps improve the detection of objects within the image by eliminating the interference of ground points. This is especially vital for identifying objects such as buildings, vehicles, and infrastructure, as it allows for a clearer focus on target objects against a clutter-free background. Second, ground filtering prevents the projection of segmentation results onto ground points, espacially for tall structures like trees and poles.
+The ground filtering is optional but preferred for aerial LiDAR data with top viewpoint. It serves two primary purposes that significantly enhance the accuracy and reliability of object detection and segmentation. First, ground filtering helps improve the detection of objects within the image by eliminating the interference of ground points. This is especially vital for identifying objects such as buildings, vehicles, and infrastructure, as it allows for a clearer focus on target objects against a clutter-free background. Second, ground filtering prevents the projection of segmentation results onto ground points, especially for tall structures like trees and poles.
 
 Our package uses the Cloth Simulation Filter (CSF) to separate the ground points from non-ground points (Figure 1). The algorithm was proposed by @zhang:2016 as an implementation of the Cloth Simulation algorithm used in 3D computer graphics to simulate fabric attached to an object.
 
@@ -50,7 +50,7 @@ Our package uses the Cloth Simulation Filter (CSF) to separate the ground points
 
 This projection can be based on various views, including cubic views (top, bottom, left, right, front, back) and panoramic views (360°).
 
-1. Cubic Projection:
+1. **Cubic Projection**:
 
 In a cubic projection, each face of the cube represents a different view (\autoref{fig:cubicview}). The 3D coordinates (X, Y, Z) are projected onto the 2D coordinates (u, v) on the image plane.
 
@@ -68,7 +68,7 @@ Similarly, these equations are adapted for other faces of the cube, adjusting th
 
 ![Different viewpoints of the Cubic View.\label{fig:cubicview}](figures/cubicview.png)
 
-2. Panoramic View:
+2. **Panoramic View**:
 
 Panoramic projections capture a full 360-degree view around a point. A common panoramic projection is the equirectangular projection. In this projection, the 3D spherical coordinates ($\Theta$, $\Phi$, $\rho$) are mapped onto 2D coordinates (u, v) on the image plane.
 
@@ -85,11 +85,13 @@ $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, 
 
 ## Step 3: Inference on the generated image
 
-The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023]. Additionally, segment-geospatial [@wu:2023] is implemented to leverage SAM for geospatial analysis by enabling users to achieve results with minimal parameters tuning.
+The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023]. Additionally, segment-geospatial [@wu:2023] is implemented to leverage SAM for geospatial analysis by enabling users to achieve results with minimal parameters tuning. The results for sample data are illustrated in \autoref{fig:inference}.
+
+![Inference results using SAM and SamGeo.\label{fig:inference}](figures/inference.png)
 
 ## Step 4: Reprojection of results on the 3D point cloud
 
-In the final step of our methodology, we seamlessly reprojet the instance segmentation results onto the original point cloud (\autoref{fig:results}). This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
+In the final step of our methodology, we seamlessly reproject the instance segmentation results onto the original point cloud (\autoref{fig:results}). This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
 
 ![Segmented point cloud.\label{fig:results}](figures/results.png)
 
@@ -97,7 +99,7 @@ In the final step of our methodology, we seamlessly reprojet the instance segmen
 
 ## Installation
 
-The package is available as a Python library and can be installed directly from [PyPI](https://pypi.org/project/segment-lidar/). We recommand using `Python>=3.9`. It is also required to install [PyTorch](https://pytorch.org/) before installing `segment-lidar`.
+The package is available as a Python library and can be installed directly from [PyPI](https://pypi.org/project/segment-lidar/). We recommend using `Python>=3.9`. It is also required to install [PyTorch](https://pytorch.org/) before installing `segment-lidar`.
 
 The easiest way to install the package in a Python environment is tu run the following command:
 
@@ -169,14 +171,5 @@ points = model.read("pointcloud.las")
 labels, *_ = model.segment(points=points, image_path="raster.tif", labels_path="labeled.tif")
 model.write(points=points, segment_ids=labels, save_path="segmented.las")
 ```
-
-# Figures
-
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
 
 # References
