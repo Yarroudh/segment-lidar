@@ -21,12 +21,6 @@ Then, you can easily install `segment-lidar` from [PyPI](https://pypi.org/projec
 pip install segment-lidar
 ```
 
-Please, ensure to install Cloth Simulation Filter (CSF) before installing `segment-lidar` from PyPI:
-
-```bash
-pip install git+https://github.com/jianboqi/CSF.git
-```
-
 Or, you can install it from source by running the following commands:
 
 ```bash
