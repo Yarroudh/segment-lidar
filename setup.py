@@ -9,6 +9,10 @@ class CustomInstallCommand(install):
     def run(self):
         subprocess.call(['pip', 'install', '-r', 'requirements.txt'])
         install.run(self)
+        try:
+            import CSF
+        except ImportError:
+            subprocess.call(['pip', 'install', 'git+https://github.com/jianboqi/CSF.git'])
         from samgeo import SamGeo
         from samgeo.text_sam import LangSAM
 
