@@ -36,7 +36,7 @@ For optimization purposes, `segment-lidar` enables using `Fast Segment Anything 
 
 The swift advancement of data acquisition technologies like LiDAR sensors and depth cameras has led to the widespread use of 3D point cloud data, which, in turn, has started a growing interest among researchers in the field of 3D scene comprehension. However, the comprehension of such unstructured, disordered and spare point clouds yields technical challenges [@su:2022].
 
-Image-based segmentation is generally considered easier than 3D point cloud segmentation.
+Recently, due the effective use of deep learning models in computer vision applications, many works focused on developing image segmentation approaches using deep learning models [@shevrin:2020].
 
 # Overview of the method
 
