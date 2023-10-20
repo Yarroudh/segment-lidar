@@ -1,0 +1,17 @@
+.flake8
+labeled.tif
+raster.tif
+segmented.las
+segmented1.las
+test.ipynb
+.ipynb_checkpoints/test-checkpoint.ipynb
+.vscode/settings.json
+__pycache__/pcd.cpython-39.pyc
+segment_lidar/__pycache__/__init__.cpython-39.pyc
+segment_lidar/__pycache__/pcd.cpython-39.pyc
+segment_lidar/__pycache__/samlidar.cpython-39.pyc
+segment_lidar.egg-info/dependency_links.txt
+segment_lidar.egg-info/PKG-INFO
+segment_lidar.egg-info/requires.txt
+segment_lidar.egg-info/SOURCES.txt
+segment_lidar.egg-info/top_level.txt

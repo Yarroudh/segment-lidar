@@ -14,17 +14,10 @@ from samgeo.text_sam import LangSAM
 from typing import List, Tuple
 import rasterio
 import laspy
-from segment_lidar.pcd import read_pcd
+import cv2
 
 
-def cloud_to_image(
-    points: np.ndarray,
-    minx: float,
-    maxx: float,
-    miny: float,
-    maxy: float,
-    resolution: float,
-) -> np.ndarray:
+def cloud_to_image(points: np.ndarray, minx: float, maxx: float, miny: float, maxy: float, resolution: float) -> np.ndarray:
     """
     Converts a point cloud to an image.
 
@@ -67,9 +60,7 @@ def cloud_to_image(
     return image
 
 
-def image_to_cloud(
-    points: np.ndarray, minx: float, maxy: float, image: np.ndarray, resolution: float
-) -> List[int]:
+def image_to_cloud(points: np.ndarray, minx: float, maxy: float, image: np.ndarray, resolution: float) -> List[int]:
     """
     Converts an image to a point cloud with segment IDs.
 
@@ -94,12 +85,7 @@ def image_to_cloud(
     pixel_y = np.floor(y).astype(int)
 
     # Mask points outside image bounds
-    out_of_bounds = (
-        (pixel_x < 0)
-        | (pixel_x >= image.shape[1])
-        | (pixel_y < 0)
-        | (pixel_y >= image.shape[0])
-    )
+    out_of_bounds = (pixel_x < 0) | (pixel_x >= image.shape[1]) | (pixel_y < 0) | (pixel_y >= image.shape[0])
     segment_ids.extend([-1] * np.sum(out_of_bounds))
 
     # Extract RGB values for valid points
@@ -117,15 +103,7 @@ def image_to_cloud(
 
 
 class mask:
-    def __init__(
-        self,
-        crop_n_layers: int = 1,
-        crop_n_points_downscale_factor: int = 1,
-        min_mask_region_area: int = 200,
-        points_per_side: int = 5,
-        pred_iou_thresh: float = 0.90,
-        stability_score_thresh: float = 0.92,
-    ):
+    def __init__(self, crop_n_layers: int = 1, crop_n_points_downscale_factor: int = 1, min_mask_region_area: int = 200, points_per_side: int = 5, pred_iou_thresh: float = 0.90, stability_score_thresh: float = 0.92):
         """
         Initializes an instance of the mask class.
 
@@ -151,15 +129,7 @@ class mask:
 
 
 class SamLidar:
-    def __init__(
-        self,
-        ckpt_path: str,
-        algorithm: str = "segment-geospatial",
-        model_type: str = "vit_h",
-        resolution: float = 0.25,
-        device: str = "cuda:0",
-        sam_kwargs: bool = False,
-    ) -> None:
+    def __init__(self, ckpt_path: str, algorithm: str = 'segment-geospatial', model_type: str = 'vit_h', resolution: float = 0.25, device: str = 'cuda:0', sam_kwargs: bool = False) -> None:
         """
         Initializes an instance of the SamLidar class.
 
@@ -180,34 +150,28 @@ class SamLidar:
         self.model_type = model_type
         self.ckpt_path = ckpt_path
         self.resolution = resolution
-        self.device = (
-            torch.device("cuda:0")
-            if device == "cuda:0" and torch.cuda.is_available()
-            else torch.device("cpu")
-        )
+        self.device = torch.device('cuda:0') if device == 'cuda:0' and torch.cuda.is_available() else torch.device('cpu')
         self.mask = mask()
 
-        if sam_kwargs or algorithm == "segment-anything":
+        if sam_kwargs or algorithm == 'segment-anything':
             self.mask_generator = SamAutomaticMaskGenerator(
-                model=sam_model_registry[model_type](checkpoint=ckpt_path).to(
-                    device=self.device
-                ),
+                model=sam_model_registry[model_type](checkpoint=ckpt_path).to(device=self.device),
                 crop_n_layers=self.mask.crop_n_layers,
                 crop_n_points_downscale_factor=self.mask.crop_n_points_downscale_factor,
                 min_mask_region_area=self.mask.min_mask_region_area,
                 points_per_side=self.mask.points_per_side,
                 pred_iou_thresh=self.mask.pred_iou_thresh,
-                stability_score_thresh=self.mask.stability_score_thresh,
+                stability_score_thresh=self.mask.stability_score_thresh
             )
 
         if sam_kwargs:
             self.sam_kwargs = {
-                "crop_n_layers": self.mask.crop_n_layers,
-                "crop_n_points_downscale_factor": self.mask.crop_n_points_downscale_factor,
-                "min_mask_region_area": self.mask.min_mask_region_area,
-                "points_per_side": self.mask.points_per_side,
-                "pred_iou_thresh": self.mask.pred_iou_thresh,
-                "stability_score_thresh": self.mask.stability_score_thresh,
+                'crop_n_layers': self.mask.crop_n_layers,
+                'crop_n_points_downscale_factor': self.mask.crop_n_points_downscale_factor,
+                'min_mask_region_area': self.mask.min_mask_region_area,
+                'points_per_side': self.mask.points_per_side,
+                'pred_iou_thresh': self.mask.pred_iou_thresh,
+                'stability_score_thresh': self.mask.stability_score_thresh
             }
         else:
             self.sam_kwargs = None
@@ -216,10 +180,12 @@ class SamLidar:
             model_type=self.model_type,
             checkpoint=self.ckpt_path,
             device=self.device,
-            sam_kwargs=self.sam_kwargs,
+            sam_kwargs=self.sam_kwargs
         )
 
-        os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
+        os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
+
 
     def read(self, path: str, classification: int = None) -> np.ndarray:
         """
@@ -236,77 +202,51 @@ class SamLidar:
         start = time.time()
         extension = os.path.splitext(path)[1]
         try:
-            if extension not in [".laz", ".las", ".npy", ".pcd"]:
-                raise ValueError(
-                    f"The input file format {extension} is not supported.\nThe file format should be [.las/.laz]."
-                )
+            if extension not in ['.laz', '.las', '.npy']:
+                raise ValueError(f'The input file format {extension} is not supported.\nThe file format should be [.las/.laz].')
         except ValueError as error:
             message = str(error)
-            lines = message.split("\n")
+            lines = message.split('\n')
             print(lines[-2])
             print(lines[-1])
             exit()
 
-        print(f"Reading {path}...")
+        print(f'Reading {path}...')
 
-        if extension == ".npy":
+        if extension == '.npy':
             points = np.load(path)
-        elif extension in [".laz", ".las"]:
+        elif extension in ['.laz', '.las']:
             las = laspy.read(path)
-            if classification is None:
-                print("- Classification value is not provided. Reading all points...")
+            if classification == None:
+                print(f'- Classification value is not provided. Reading all points...')
                 pcd = las.points
             else:
                 try:
-                    if hasattr(las, "classification"):
-                        print(
-                            "- Reading points with classification value {classification}..."
-                        )
+                    if hasattr(las, 'classification'):
+                        print(f'- Reading points with classification value {classification}...')
                         pcd = las.points[las.raw_classification == classification]
                     else:
-                        raise ValueError(
-                            "The input file does not contain classification values."
-                        )
+                        raise ValueError(f'The input file does not contain classification values.')
                 except ValueError as error:
                     message = str(error)
-                    lines = message.split("\n")
+                    lines = message.split('\n')
                     print(lines[-2])
                     print(lines[-1])
                     exit()
 
-            if hasattr(las, "red") and hasattr(las, "green") and hasattr(las, "blue"):
-                print("- Reading RGB values...")
-                points = np.vstack(
-                    (
-                        pcd.x,
-                        pcd.y,
-                        pcd.z,
-                        pcd.red / 255.0,
-                        pcd.green / 255.0,
-                        pcd.blue / 255.0,
-                    )
-                ).transpose()
+            if hasattr(las, 'red') and hasattr(las, 'green') and hasattr(las, 'blue'):
+                print(f'- Reading RGB values...')
+                points = np.vstack((pcd.x, pcd.y, pcd.z, pcd.red / 255.0, pcd.green / 255.0, pcd.blue / 255.0)).transpose()
             else:
-                print("- RGB values are not provided. Reading only XYZ values...")
+                print(f'- RGB values are not provided. Reading only XYZ values...')
                 points = np.vstack((pcd.x, pcd.y, pcd.z)).transpose()
-        elif extension in [".pcd"]:
-            pcd_file = read_pcd(path)
-            points = pcd_file["points"][["x", "y", "z"]].values
 
         end = time.time()
-        print(
-            f"File reading is completed in {end - start:.2f} seconds. The point cloud contains {points.shape[0]} points.\n"
-        )
+        print(f'File reading is completed in {end - start:.2f} seconds. The point cloud contains {points.shape[0]} points.\n')
         return points
 
-    def csf(
-        self,
-        points: np.ndarray,
-        class_threshold: float = 0.5,
-        cloth_resolution: float = 0.2,
-        iterations: int = 500,
-        slope_smooth: bool = False,
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+
+    def csf(self, points: np.ndarray, class_threshold: float = 0.5, cloth_resolution: float = 0.2, iterations: int = 500, slope_smooth: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Applies the CSF (Cloth Simulation Filter) algorithm to filter ground points in a point cloud.
 
@@ -324,7 +264,7 @@ class SamLidar:
         :rtype: Tuple[np.ndarray, np.ndarray, np.ndarray]
         """
         start = time.time()
-        print("Applying CSF algorithm...")
+        print(f'Applying CSF algorithm...')
         csf = CSF.CSF()
         csf.params.bSloopSmooth = slope_smooth
         csf.params.cloth_resolution = cloth_resolution
@@ -336,22 +276,15 @@ class SamLidar:
         csf.do_filtering(ground, non_ground)
 
         points = points[non_ground, :]
-        os.remove("cloth_nodes.txt")
+        os.remove('cloth_nodes.txt')
 
         end = time.time()
-        print(
-            f"CSF algorithm is completed in {end - start:.2f} seconds. The filtered non-ground cloud contains {points.shape[0]} points.\n"
-        )
+        print(f'CSF algorithm is completed in {end - start:.2f} seconds. The filtered non-ground cloud contains {points.shape[0]} points.\n')
 
         return points, np.asarray(non_ground), np.asarray(ground)
 
-    def segment(
-        self,
-        points: np.ndarray,
-        text_prompt: str = None,
-        image_path: str = "raster.tif",
-        labels_path: str = "labeled.tif",
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+
+    def segment(self, points: np.ndarray, text_prompt: str = None, image_path: str = 'raster.tif', labels_path: str = 'labeled.tif') -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Segments a point cloud based on the provided parameters and returns the segment IDs, original image, and segmented image.
 
@@ -367,34 +300,34 @@ class SamLidar:
         :rtype: Tuple[np.ndarray, np.ndarray, np.ndarray]
         """
         start = time.time()
-        print(f"Segmenting the point cloud...")
+        print(f'Segmenting the point cloud...')
         minx = np.min(points[:, 0])
         maxx = np.max(points[:, 0])
         miny = np.min(points[:, 1])
         maxy = np.max(points[:, 1])
 
-        print(f"- Generating raster image...")
+        print(f'- Generating raster image...')
         image = cloud_to_image(points, minx, maxx, miny, maxy, self.resolution)
         image = np.asarray(image).astype(np.uint8)
 
-        print(f"- Saving raster image...")
+        print(f'- Saving raster image...')
         with rasterio.open(
             image_path,
-            "w",
-            driver="GTiff",
+            'w',
+            driver='GTiff',
             width=image.shape[1],
             height=image.shape[0],
             count=3,
-            dtype=image.dtype,
+            dtype=image.dtype
         ) as dst:
             for i in range(3):
                 dst.write(image[:, :, i], i + 1)
 
-        with rasterio.open(image_path, "r") as src:
+        with rasterio.open(image_path, 'r') as src:
             image_rgb = src.read()
 
-        print(f"- Applying {self.algorithm} to raster image...")
-        if self.algorithm == "segment-anything":
+        print(f'- Applying {self.algorithm} to raster image...')
+        if self.algorithm == 'segment-anything':
             sam = sam_model_registry[self.model_type](checkpoint=self.ckpt_path)
             sam.to(self.device)
 
@@ -408,64 +341,43 @@ class SamLidar:
                 mask = detections.mask[i]
                 segmented_image[mask] = i
 
-            print(f"- Saving segmented image...")
+            print(f'- Saving segmented image...')
             with rasterio.open(
                 labels_path,
-                "w",
-                driver="GTiff",
+                'w',
+                driver='GTiff',
                 width=segmented_image.shape[1],
                 height=segmented_image.shape[0],
                 count=1,
-                dtype=segmented_image.dtype,
+                dtype=segmented_image.dtype
             ) as dst:
                 dst.write(segmented_image, 1)
 
-        elif self.algorithm == "segment-geospatial":
+
+        elif self.algorithm == 'segment-geospatial':
             if text_prompt is not None:
-                print(f"- Generating labels using text prompt...")
+                print(f'- Generating labels using text prompt...')
                 sam = LangSAM()
-                sam.predict(
-                    image=image_path,
-                    text_prompt=text_prompt,
-                    box_threshold=0.24,
-                    text_threshold=0.3,
-                    output=labels_path,
-                )
-                print(f"- Saving segmented image...")
+                sam.predict(image=image_path, text_prompt=text_prompt, box_threshold=0.24, text_threshold=0.3, output=labels_path)
+                print(f'- Saving segmented image...')
             else:
                 sam = self.sam_geo
-                sam.generate(
-                    source=image_path,
-                    output=labels_path,
-                    erosion_kernel=(3, 3),
-                    foreground=True,
-                    unique=True,
-                )
-                print(f"- Saving segmented image...")
+                sam.generate(source=image_path, output=labels_path, erosion_kernel=(3, 3), foreground=True, unique=True)
+                print(f'- Saving segmented image...')
 
-        with rasterio.open(labels_path, "r") as src:
+        with rasterio.open(labels_path, 'r') as src:
             segmented_image = src.read()
             segmented_image = np.squeeze(segmented_image)
 
-        print(f"- Generating segment IDs...")
-        segment_ids = image_to_cloud(
-            points, minx, maxy, segmented_image, self.resolution
-        )
+        print(f'- Generating segment IDs...')
+        segment_ids = image_to_cloud(points, minx, maxy, segmented_image, self.resolution)
         end = time.time()
 
-        print(
-            f"Segmentation is completed in {end - start:.2f} seconds. Number of instances: {np.max(segmented_image)}\n"
-        )
+        print(f'Segmentation is completed in {end - start:.2f} seconds. Number of instances: {np.max(segmented_image)}\n')
         return segment_ids, segmented_image, image_rgb
 
-    def write(
-        self,
-        points: np.ndarray,
-        segment_ids: np.ndarray,
-        non_ground: np.ndarray = None,
-        ground: np.ndarray = None,
-        save_path: str = "segmented.las",
-    ) -> None:
+
+    def write(self, points: np.ndarray, segment_ids: np.ndarray, non_ground: np.ndarray = None, ground: np.ndarray = None, save_path: str = 'segmented.las') -> None:
         """
         Writes the segmented point cloud data to a LAS/LAZ file.
 
@@ -484,18 +396,16 @@ class SamLidar:
         start = time.time()
         extension = os.path.splitext(save_path)[1]
         try:
-            if extension not in [".laz", ".las"]:
-                raise ValueError(
-                    f"The input file format {extension} is not supported.\nThe file format should be [.las/.laz]."
-                )
+            if extension not in ['.laz', '.las']:
+                raise ValueError(f'The input file format {extension} is not supported.\nThe file format should be [.las/.laz].')
         except ValueError as error:
             message = str(error)
-            lines = message.split("\n")
+            lines = message.split('\n')
             print(lines[-2])
             print(lines[-1])
             exit()
 
-        print(f"Writing the segmented point cloud to {save_path}...")
+        print(f'Writing the segmented point cloud to {save_path}...')
 
         header = laspy.LasHeader(point_format=3, version="1.3")
         lidar = laspy.LasData(header=header)
@@ -504,19 +414,15 @@ class SamLidar:
             indices = np.concatenate((non_ground, ground))
             lidar.xyz = points[indices]
             segment_ids = np.append(segment_ids, np.full(len(ground), -1))
-            lidar.add_extra_dim(
-                laspy.ExtraBytesParams(name="segment_id", type=np.int32)
-            )
+            lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
             lidar.segment_id = segment_ids
         else:
             lidar.xyz = points
-            lidar.add_extra_dim(
-                laspy.ExtraBytesParams(name="segment_id", type=np.int32)
-            )
+            lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
             lidar.segment_id = segment_ids
 
         lidar.write(save_path)
 
         end = time.time()
-        print(f"Writing is completed in {end - start:.2f} seconds.\n")
+        print(f'Writing is completed in {end - start:.2f} seconds.\n')
         return None
