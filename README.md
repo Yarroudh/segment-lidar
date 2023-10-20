@@ -67,7 +67,7 @@ model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=lab
 
 For testing purposes, you can download a sample here: [pointcloud.las](https://drive.google.com/file/d/16EF2aRSvo8u0pXvwtaQ6sjhP5h0sWw3o/view?usp=sharing).
 
-This data was retrieved from **AHN-4**. For more data, please visit [AHN-Viewer](https://ahn.arcgisonline.nl/ahnviewer/).
+This data was retrieved from **AHN-4**. For more data, please visit [GeoTiles.nl](https://geotiles.nl/).
 
 ## Model checkpoints
 
