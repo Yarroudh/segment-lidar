@@ -1,5 +1,5 @@
 ---
-title: 'SamLidar: Automatic Unsupervised LiDAR-Segmentation using Segment-Anything Model (SAM)'
+title: 'Segment-Lidar: Automatic Unsupervised LiDAR-Segmentation using Segment-Anything Model (SAM)'
 tags:
   - Python
   - Segment-Anything Model
