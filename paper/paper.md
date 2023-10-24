@@ -40,9 +40,11 @@ One approach for point cloud learning is to use deep neural networks. Deep learn
 
 The Segment Anything Model (SAM) is one of the most popular image segmentation models that was released recently. The model was introduced by @kirillov:2023 as a part of the Segment Anything (SA) project and has three components: an image encoder, a flexible prompt encoder and a fast mask decoder. It was trained on SA-1B dataset that consists of 11 millions licensed and privacy respecting images and 1.1 billion high-quality segmentation masks.
 
-Due to its zero-shot performance, SAM served as the basis for the development of many other packages. `Segment-Geospatial` is one of these packages that was designed to segment geospatial data using Segment Anything Model [@wu:2023]. `Grounded-SAM` is another package that combines `Grounding DINO` [@liu:2023] with `Segment Anythin Model` to automatically detect and segment images using text prompts.
+Due to its zero-shot performance, SAM served as the foundation for the development of many other packages. `Segment-Geospatial` is one of these packages that was designed to segment geospatial data using Segment Anything Model [@wu:2023]. `Grounded-SAM` is another package that combines `Grounding DINO` [@liu:2023] with `Segment Anythin Model` to automatically detect and segment images using text prompts.
 
 Other implementations focused on reducing the computation costs of SAM that prevent it from wider industry applications. @zhao:2023 introduced `Fast Segment Anything` as a speed-up alternative method for the fundamental task of SAM with comparable performance at 50 times higher run-time speed.
+
+Regarding our work, we propose `Segment-Lidar` as an open-source Python package for automatic unsupervised 3D LiDAR-segmentation using Segment Anything Model (SAM) and other dependencies that make use of it.
 
 # Overview of the method
 
