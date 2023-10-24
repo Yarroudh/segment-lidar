@@ -53,7 +53,7 @@ The idea behind using `SAM` is to automatically identify and separate different 
 
 The ground filtering is optional but preferred for aerial LiDAR data with top viewpoint. It serves two primary purposes that significantly enhance the accuracy and reliability of object detection and segmentation. First, ground filtering helps improve the detection of objects within the image by eliminating the interference of ground points. This is especially vital for identifying objects such as buildings, vehicles, and infrastructure, as it allows for a clearer focus on target objects against a clutter-free background. Second, ground filtering prevents the projection of segmentation results onto ground points, especially for tall structures like trees and poles.
 
-Our package uses the Cloth Simulation Filter (CSF) to separate the ground points from non-ground points (Figure 1). The algorithm was proposed by @zhang:2016 as an implementation of the Cloth Simulation algorithm used in 3D computer graphics to simulate fabric attached to an object.
+Our package uses the Cloth Simulation Filter (CSF) to separate the ground points from non-ground points. The algorithm was proposed by @zhang:2016 as an implementation of the Cloth Simulation algorithm used in 3D computer graphics to simulate fabric attached to an object.
 
 ## Step 2: Projection of the 3D point cloud into a two-dimensional image
 
