@@ -36,14 +36,13 @@ For optimization purposes, `Segment-Lidar` enables using `Fast Segment Anything 
 
 The swift advancement of data acquisition technologies like LiDAR sensors and depth cameras has led to the widespread use of 3D point cloud data, which, in turn, has started a growing interest among researchers in the field of 3D scene comprehension. However, the comprehension of such unstructured, disordered and spare point clouds yields technical challenges [@su:2022].
 
-Due the effective use of deep learning models in computer vision applications, many works focused on developing image segmentation approaches using deep learning models [@shevrin:2020]. Another advantage of image segmentation models is that they require less computational and data resources for finetuning in order to obtain competitive performance on downstream tasks [@chenfeng:2021].
+One approach for point cloud learning is to use deep neural networks. Deep learning has been successfully used to solve various 2D vision problems. Due the effective use of deep learning models in computer vision applications, many works focused on developing image segmentation approaches using deep learning models [@shevrin:2020]. Recently, deep learning applied to point clouds has become also very popular, and many methods have been suggested to solve various problems in this field [@yulan:2020]. Some of these methods process the point cloud as a structured image to leverage the performance of 2D deep learning models. This is partly due to the fewer computational and data resources required to finetune image segmentation models in order to obtain competitive performance on downstream tasks [@chenfeng:2021].
 
-Recently, @kirillov:2023 introduced the Segment Anything Model (SAM) for image segmentation. The model has three components: an image encoder, a flexible prompt encoder and a fast mask decoder, and it was trained on SA-1B dataset that consists of 11 millions licensed and privacy respecting images and 1.1 billion high-quality segmentation masks. According to @kirillov:2023, its zero-shot performance is competitive, or even superior, to prior fully supervised modeled.
+The Segment Anything Model (SAM) is one of the most popular image segmentation models that was released recently. The model was introduced by @kirillov:2023 as a part of the Segment Anything (SA) project and has three components: an image encoder, a flexible prompt encoder and a fast mask decoder. It was trained on SA-1B dataset that consists of 11 millions licensed and privacy respecting images and 1.1 billion high-quality segmentation masks.
 
-SAM served as the basis for the development of many other packages. `Segment-Geospatial` is one of these packages that was designed to segment geospatial data using Segment Anything Model [@wu:2023]. `Grounded-SAM` is another package that combines `Grounding DINO` [@liu:2023] with `Segment Anythin Model` to automatically detect and segment images using text prompts.
+Due to its zero-shot performance, SAM served as the basis for the development of many other packages. `Segment-Geospatial` is one of these packages that was designed to segment geospatial data using Segment Anything Model [@wu:2023]. `Grounded-SAM` is another package that combines `Grounding DINO` [@liu:2023] with `Segment Anythin Model` to automatically detect and segment images using text prompts.
 
-![Results of Grounded SAM [@idea:2023].\label{fig:groundedsam}](figures/groundedsam.png)
-
+Other implementations focused on reducing the computation costs of SAM that prevent it from wider industry applications. @zhao:2023 introduced `Fast Segment Anything` as a speed-up alternative method for the fundamental task of SAM with comparable performance at 50 times higher run-time speed.
 
 # Overview of the method
 
@@ -91,8 +90,6 @@ $$u = w\times \frac{\Theta - \Theta_{min}}{\Theta_{max} - \Theta_{min}}$$
 $$v = h\times \frac{\Phi - \Phi_{min}}{\Phi_{max} - \Phi_{min}}$$
 
 $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, and $\Phi_{min}$ and $\Phi_{min}$ are the minimum and maximum polar angles. `w` and `h` are the dimensions of the image.
-
-
 
 ## Step 3: Inference on the generated image
 
