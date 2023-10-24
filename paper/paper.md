@@ -110,20 +110,6 @@ In the final step of our methodology, we seamlessly reproject the instance segme
 
 The package is available as a Python library and can be installed directly from [PyPI](https://pypi.org/project/segment-lidar/). We recommend using `Python>=3.9`. It is also required to install [PyTorch](https://pytorch.org/) before installing `segment-lidar`.
 
-The easiest way to install the package in a Python environment is tu run the following command:
-
-```bash
-pip install segment-lidar
-```
-
-It is also possible to install it from source by running these commands:
-
-```bash
-git clone https://github.com/Yarroudh/segment-lidar
-cd segment-lidar
-python setup.py install
-```
-
 The usage of `Segment-Lidar` is comprehensively detailed in the accompanying documentation, which includes tutorials providing step-by-step instructions.
 
 The package also offers an API comprising classes and functions to ensure interoperability with other libraries for numerical computing, image processing and machine learning.
