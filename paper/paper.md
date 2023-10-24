@@ -26,11 +26,11 @@ bibliography: paper.bib
 
 # Summary
 
-`Segment-Lidar` is a Python package for automatic unsupervised segmentation of aerial LiDAR data. It proposes an image-based approach for segmenting aerial point clouds using `Segment-Anthing Model (SAM)` package from [Meta AI](https://github.com/facebookresearch). (to complete by justifying why do we need unsupervised segmentation and how SAM is powerful)
+`Segment-Lidar` is a Python package for automatic unsupervised segmentation of aerial LiDAR data. It proposes an image-based approach for segmenting aerial point clouds using `Segment-Anthing Model (SAM)` package from [Meta AI](https://github.com/facebookresearch).
 
-The `Segment-Lidar` API provides functions and classes to define the segmentation model and its parameters, and also to handle transformation of 3D point clouds into images. The packages also relies on other dependencies that make use of `SAM` for instance segmentation of images. This includes the `Segment-Geospatial` package from [Open Geospatial Solutions](https://github.com/opengeos) for segmenting geospatial data and the `Grounded-SAM` package from [The International Digital Economy Academy Research (IDEA-Research)](https://github.com/IDEA-Research) that combines `SAM` with `GroundingDINO` to detect and segment anything with text prompts. The `GroundingDINO` package was introduced by IDEA-Research as an implementation of the paper "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection".
+The API provides functions and classes to define the segmentation model and its parameters, and also to handle transformation between 3D point clouds and images. The package also relies on other dependencies that make use of `SAM`. This includes the `Segment-Geospatial` package from [Open Geospatial Solutions](https://github.com/opengeos) for segmenting geospatial data and the `Grounded-SAM` package from [The International Digital Economy Academy Research (IDEA-Research)](https://github.com/IDEA-Research) that combines `SAM` with `GroundingDINO` to detect and segment anything with text prompts. The `GroundingDINO` package was introduced by IDEA-Research as an implementation of the paper "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection".
 
-For optimization purposes, `SamLidar` enables using `Fast Segment Anything Model (FastSAM)` as an alternative to `SAM` original API. The `FastSAM` is a Convolutional Neural Network (CNN) `SAM` that was trained using only 2% of the `SA-1B` dataset published by `SAM` authors. It achieves comparable performance at 50x higher run-time speed.
+For optimization purposes, `Segment-Lidar` enables using `Fast Segment Anything Model (FastSAM)` as an alternative to `SAM` original API. The `FastSAM` is a Convolutional Neural Network (CNN) `SAM` that was trained using only 2% of the `SA-1B` dataset published by `SAM` authors. It achieves comparable performance at 50x higher run-time speed.
 
 # Statement of need
 
@@ -40,11 +40,14 @@ Recently, due the effective use of deep learning models in computer vision appli
 
 Another advantage of image segmentation models is that they require less computational and data resources for finetuning in order to obtain competitive performance on downstream tasks [@chenfeng:2021].
 
-@kirillov:2023 introduced the Segment-Anything project as a new task, model, and dataset for image segmentation.
+@kirillov:2023 introduced the Segment Anything Model (SAM) for image segmentation. It has three three components: an image encoder, a flexible prompt encoder, and a fast mask decoder. The model was trained on SA-1B dataset that consists of 11 millions  licensed and privacy respecting images and 1.1 billion high-quality segmentation masks.
+
+SAM served as the basis for the development of many other packages. `Segment-Geospatial` is one of these open-source packages that was designed to segment geospatial data using Segment Anything Model [@wu:2023].
+
 
 # Overview of the method
 
-The main aim of using `SAM` is to automatically identify and separate different instances in 3D LiDAR data through automated image segmentation. The process can be divided into four main steps:
+The idea behind using `SAM` is to automatically identify and separate different instances in 3D LiDAR data through automated image segmentation. The process can be divided into four main steps:
 
 ## Step 1: Ground filtering using Cloth Simulation Filter [Optional]
 
@@ -89,9 +92,11 @@ $$v = h\times \frac{\Phi - \Phi_{min}}{\Phi_{max} - \Phi_{min}}$$
 
 $\Theta_{min}$ and $\Theta_{max}$ are the minimum and maximum azimuthal angles, and $\Phi_{min}$ and $\Phi_{min}$ are the minimum and maximum polar angles. `w` and `h` are the dimensions of the image.
 
+
+
 ## Step 3: Inference on the generated image
 
-The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023]. Additionally, segment-geospatial [@wu:2023] is implemented to leverage SAM for geospatial analysis by enabling users to achieve results with minimal parameters tuning. The results for sample data are illustrated in \autoref{fig:inference}.
+The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023]. Additionally, Segment-Geospatial [@wu:2023] is implemented to leverage SAM for geospatial analysis by enabling users to achieve results with minimal parameters tuning. The results for sample data are illustrated in \autoref{fig:inference}.
 
 ![Inference results using SAM and SamGeo.\label{fig:inference}](figures/inference.png)
 
@@ -119,7 +124,7 @@ cd segment-lidar
 python setup.py install
 ```
 
-The usage of `SamLidar` is comprehensively detailed in the accompanying documentation, which includes tutorials providing step-by-step instructions.
+The usage of `Segment-Lidar` is comprehensively detailed in the accompanying documentation, which includes tutorials providing step-by-step instructions.
 
 The package also offers an API comprising classes and functions to ensure interoperability with other libraries for numerical computing, image processing and machine learning.
 
