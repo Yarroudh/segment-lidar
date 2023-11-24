@@ -14,7 +14,7 @@ show_powered_by = False
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    'sphinx.ext.autodoc',
+    'sphinx.ext.autodoc'
 ]
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -33,8 +33,7 @@ html_context = {
     'version_dropdown': True,
     'display_github': True,
     'github_user': 'yarroudh',
-    'github_repo': 'segment-lidar',
-    'github_version': 'main/docs/',
+    'github_repo': 'segment-lidar'
 }
 
 html_show_sphinx = False
