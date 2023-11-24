@@ -3,133 +3,64 @@
 # This file is distributed under the BSD-3 licence. See LICENSE file for complete text of the license.
 
 import os
-import CSF
 import time
+
+import CSF
 import torch
 import numpy as np
 import supervision as sv
 from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
 from samgeo import SamGeo
 from samgeo.text_sam import LangSAM
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import rasterio
 import laspy
-import cv2
-
-
-def cloud_to_image(points: np.ndarray, minx: float, maxx: float, miny: float, maxy: float, resolution: float) -> np.ndarray:
-    """
-    Converts a point cloud to an image.
-
-    :param points: An array of points in the cloud, where each row represents a point.
-                   The array shape can be (N, 3) or (N, 6).
-                   If the shape is (N, 3), each point is assumed to have white color (255, 255, 255).
-                   If the shape is (N, 6), the last three columns represent the RGB color values for each point.
-    :type points: ndarray
-    :param minx: The minimum x-coordinate value of the cloud bounding box.
-    :type minx: float
-    :param maxx: The maximum x-coordinate value of the cloud bounding box.
-    :type maxx: float
-    :param miny: The minimum y-coordinate value of the cloud bounding box.
-    :type miny: float
-    :param maxy: The maximum y-coordinate value of the cloud bounding box.
-    :type maxy: float
-    :param resolution: The resolution of the image in units per pixel.
-    :type resolution: float
-    :return: An image array representing the point cloud, where each pixel contains the RGB color values
-             of the corresponding point in the cloud.
-    :rtype: ndarray
-    :raises ValueError: If the shape of the points array is not valid or if any parameter is invalid.
-    """
-    if points.shape[1] == 3:
-        colors = np.array([255, 255, 255])
-    else:
-        colors = points[:, -3:]
-
-    x = (points[:, 0] - minx) / resolution
-    y = (maxy - points[:, 1]) / resolution
-    pixel_x = np.floor(x).astype(int)
-    pixel_y = np.floor(y).astype(int)
-
-    width = int((maxx - minx) / resolution) + 1
-    height = int((maxy - miny) / resolution) + 1
-
-    image = np.zeros((height, width, 3), dtype=np.uint8)
-    image[pixel_y, pixel_x] = colors
-
-    return image
-
-
-def image_to_cloud(points: np.ndarray, minx: float, maxy: float, image: np.ndarray, resolution: float) -> List[int]:
-    """
-    Converts an image to a point cloud with segment IDs.
-
-    :param points: An array of points representing the cloud, where each row represents a point.
-                   The array shape is (N, 3) where each point contains x, y, and z coordinates.
-    :param minx: The minimum x-coordinate value of the cloud bounding box.
-    :param maxy: The maximum y-coordinate value of the cloud bounding box.
-    :param image: The image array representing the input image.
-    :param resolution: The resolution of the image in units per pixel.
-    :return: A list of segment IDs for each point in the cloud. The segment ID represents the color segment
-             in the input image that the corresponding point belongs to.
-    :rtype: List[int]
-    """
-    segment_ids = []
-    unique_values = {}
-    image = np.asarray(image)
-
-    # Calculate pixel coordinates for all points
-    x = (points[:, 0] - minx) / resolution
-    y = (maxy - points[:, 1]) / resolution
-    pixel_x = np.floor(x).astype(int)
-    pixel_y = np.floor(y).astype(int)
-
-    # Mask points outside image bounds
-    out_of_bounds = (pixel_x < 0) | (pixel_x >= image.shape[1]) | (pixel_y < 0) | (pixel_y >= image.shape[0])
-    segment_ids.extend([-1] * np.sum(out_of_bounds))
-
-    # Extract RGB values for valid points
-    valid_points = ~out_of_bounds
-    rgb = image[pixel_y[valid_points], pixel_x[valid_points]]
-
-    # Map RGB values to unique segment IDs
-    for rgb_val in rgb:
-        if rgb_val not in unique_values:
-            unique_values[rgb_val] = len(unique_values)
-
-        segment_ids.append(unique_values[rgb_val])
-
-    return segment_ids
-
-
-class mask:
-    def __init__(self, crop_n_layers: int = 1, crop_n_points_downscale_factor: int = 1, min_mask_region_area: int = 200, points_per_side: int = 5, pred_iou_thresh: float = 0.90, stability_score_thresh: float = 0.92):
-        """
-        Initializes an instance of the mask class.
-
-        :param crop_n_layers: The number of layers to crop from the top of the image, defaults to 1.
-        :type crop_n_layers: int
-        :param crop_n_points_downscale_factor: The downscale factor for the number of points in the cropped image, defaults to 1.
-        :type crop_n_points_downscale_factor: int
-        :param min_mask_region_area: The minimum area of a mask region, defaults to 1000.
-        :type min_mask_region_area: int
-        :param points_per_side: The number of points per side of the mask region, defaults to 32.
-        :type points_per_side: int
-        :param pred_iou_thresh: The IoU threshold for the predicted mask region, defaults to 0.90.
-        :type pred_iou_thresh: float
-        :param stability_score_thresh: The stability score threshold for the predicted mask region, defaults to 0.92.
-        :type stability_score_thresh: float
-        """
-        self.crop_n_layers = crop_n_layers
-        self.crop_n_points_downscale_factor = crop_n_points_downscale_factor
-        self.min_mask_region_area = min_mask_region_area
-        self.points_per_side = points_per_side
-        self.pred_iou_thresh = pred_iou_thresh
-        self.stability_score_thresh = stability_score_thresh
+from segment_lidar.view import TopView, PinholeView
 
 
 class SamLidar:
-    def __init__(self, ckpt_path: str, algorithm: str = 'segment-geospatial', model_type: str = 'vit_h', resolution: float = 0.25, device: str = 'cuda:0', sam_kwargs: bool = False) -> None:
+    class mask:
+        def __init__(self, crop_n_layers: int = 1, crop_n_points_downscale_factor: int = 1, min_mask_region_area: int = 200, points_per_side: int = 5, pred_iou_thresh: float = 0.90, stability_score_thresh: float = 0.92):
+            """
+            Initializes an instance of the mask class.
+
+            :param crop_n_layers: The number of layers to crop from the top of the image, defaults to 1.
+            :type crop_n_layers: int
+            :param crop_n_points_downscale_factor: The downscale factor for the number of points in the cropped image, defaults to 1.
+            :type crop_n_points_downscale_factor: int
+            :param min_mask_region_area: The minimum area of a mask region, defaults to 1000.
+            :type min_mask_region_area: int
+            :param points_per_side: The number of points per side of the mask region, defaults to 32.
+            :type points_per_side: int
+            :param pred_iou_thresh: The IoU threshold for the predicted mask region, defaults to 0.90.
+            :type pred_iou_thresh: float
+            :param stability_score_thresh: The stability score threshold for the predicted mask region, defaults to 0.92.
+            :type stability_score_thresh: float
+            """
+            self.crop_n_layers = crop_n_layers
+            self.crop_n_points_downscale_factor = crop_n_points_downscale_factor
+            self.min_mask_region_area = min_mask_region_area
+            self.points_per_side = points_per_side
+            self.pred_iou_thresh = pred_iou_thresh
+            self.stability_score_thresh = stability_score_thresh
+
+    class text_prompt:
+        def __init__(self, text: str = None, box_threshold: float = 0.24, text_threshold: float = 0.15):
+            """
+            Initializes an instance of the text_prompt class.
+
+            :param text: The text to search for, defaults to None.
+            :type text: str
+            :param box_threshold: The box threshold, defaults to 0.24.
+            :type box_threshold: float
+            :param text_threshold: The text threshold, defaults to 0.15.
+            :type text_threshold: float
+            """
+            self.text = text
+            self.box_threshold = box_threshold
+            self.text_threshold = text_threshold
+
+    def __init__(self, ckpt_path: str, algorithm: str = 'segment-geospatial', model_type: str = 'vit_h', resolution: float = 0.25, height: int = 512, width: int = 512, distance_threshold: float = None, device: str = 'cuda:0', sam_kwargs: bool = False, intrinsics: np.ndarray = None, rotation: np.ndarray = None, translation: np.ndarray = None, interactive: bool = False) -> None:
         """
         Initializes an instance of the SamLidar class.
 
@@ -150,10 +81,18 @@ class SamLidar:
         self.model_type = model_type
         self.ckpt_path = ckpt_path
         self.resolution = resolution
+        self.height = height
+        self.width = width
+        self.distance_threshold = distance_threshold
         self.device = torch.device('cuda:0') if device == 'cuda:0' and torch.cuda.is_available() else torch.device('cpu')
-        self.mask = mask()
+        self.mask = SamLidar.mask()
+        self.text_prompt = SamLidar.text_prompt()
+        self.interactive = interactive
+        self.intrinsics = intrinsics
+        self.rotation = rotation
+        self.translation = translation
 
-        if sam_kwargs or algorithm == 'segment-anything':
+        if algorithm == 'segment-anything':
             self.mask_generator = SamAutomaticMaskGenerator(
                 model=sam_model_registry[model_type](checkpoint=ckpt_path).to(device=self.device),
                 crop_n_layers=self.mask.crop_n_layers,
@@ -179,7 +118,6 @@ class SamLidar:
         self.sam_geo = SamGeo(
             model_type=self.model_type,
             checkpoint=self.ckpt_path,
-            device=self.device,
             sam_kwargs=self.sam_kwargs
         )
 
@@ -202,7 +140,7 @@ class SamLidar:
         start = time.time()
         extension = os.path.splitext(path)[1]
         try:
-            if extension not in ['.laz', '.las', '.npy']:
+            if extension not in ['.laz', '.las']:
                 raise ValueError(f'The input file format {extension} is not supported.\nThe file format should be [.las/.laz].')
         except ValueError as error:
             message = str(error)
@@ -284,14 +222,14 @@ class SamLidar:
         return points, np.asarray(non_ground), np.asarray(ground)
 
 
-    def segment(self, points: np.ndarray, text_prompt: str = None, image_path: str = 'raster.tif', labels_path: str = 'labeled.tif') -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def segment(self, points: np.ndarray, view: Union[TopView, PinholeView] = TopView(), image_path: str = 'raster.tif', labels_path: str = 'labeled.tif') -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Segments a point cloud based on the provided parameters and returns the segment IDs, original image, and segmented image.
 
         :param points: The point cloud data as a NumPy array.
         :type points: np.ndarray
-        :param text_prompt: Optional text prompt for segment generation, defaults to None.
-        :type text_prompt: str
+        :param view: The viewpoint to use for segmenting the point cloud, defaults to TopView().
+        :type view: Union[TopView, PinholeView]
         :param image_path: Path to the input raster image, defaults to 'raster.tif'.
         :type image_path: str
         :param labels_path: Path to save the labeled output image, defaults to 'labeled.tif'.
@@ -299,15 +237,25 @@ class SamLidar:
         :return: A tuple containing the segment IDs, segmented image, and RGB image.
         :rtype: Tuple[np.ndarray, np.ndarray, np.ndarray]
         """
+
         start = time.time()
+
+        directory = os.path.dirname(labels_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         print(f'Segmenting the point cloud...')
-        minx = np.min(points[:, 0])
-        maxx = np.max(points[:, 0])
-        miny = np.min(points[:, 1])
-        maxy = np.max(points[:, 1])
 
         print(f'- Generating raster image...')
-        image = cloud_to_image(points, minx, maxx, miny, maxy, self.resolution)
+
+        if view.__class__.__name__ == 'TopView':
+            image = view.cloud_to_image(points=points, resolution=self.resolution)
+        elif view.__class__.__name__ == 'PinholeView':
+            if self.interactive:
+                image, K, pose = view.cloud_to_image(points=points, resolution=self.resolution, distance_threshold=self.distance_threshold)
+            else:
+                image, K, pose = view.cloud_to_image(points=points, resolution=self.resolution, distance_threshold=self.distance_threshold, intrinsics=self.intrinsics, rotation=self.rotation, translation=self.translation)
+
         image = np.asarray(image).astype(np.uint8)
 
         print(f'- Saving raster image...')
@@ -333,7 +281,6 @@ class SamLidar:
 
             image_rgb = image_rgb.transpose(1, 2, 0)
             result = self.mask_generator.generate(image_rgb)
-            mask_annotator = sv.MaskAnnotator()
             detections = sv.Detections.from_sam(result)
             num_masks, height, width = detections.mask.shape
             segmented_image = np.zeros((height, width), dtype=np.uint8)
@@ -353,12 +300,13 @@ class SamLidar:
             ) as dst:
                 dst.write(segmented_image, 1)
 
+            print(f'- Saving segmented image...')
 
         elif self.algorithm == 'segment-geospatial':
-            if text_prompt is not None:
+            if self.text_prompt.text is not None:
                 print(f'- Generating labels using text prompt...')
                 sam = LangSAM()
-                sam.predict(image=image_path, text_prompt=text_prompt, box_threshold=0.24, text_threshold=0.3, output=labels_path)
+                sam.predict(image=image_path, text_prompt=self.text_prompt.text, box_threshold=self.text_prompt.box_threshold, text_threshold=self.text_prompt.text_threshold, output=labels_path)
                 print(f'- Saving segmented image...')
             else:
                 sam = self.sam_geo
@@ -370,11 +318,18 @@ class SamLidar:
             segmented_image = np.squeeze(segmented_image)
 
         print(f'- Generating segment IDs...')
-        segment_ids = image_to_cloud(points, minx, maxy, segmented_image, self.resolution)
+        if view.__class__.__name__ == 'TopView':
+            segment_ids = view.image_to_cloud(points=points, image=segmented_image, resolution=self.resolution)
+        elif view.__class__.__name__ == 'PinholeView':
+            segment_ids = view.image_to_cloud(points=points, image=segmented_image, intrinsics=K, extrinsics=pose)
         end = time.time()
 
         print(f'Segmentation is completed in {end - start:.2f} seconds. Number of instances: {np.max(segmented_image)}\n')
-        return segment_ids, segmented_image, image_rgb
+
+        if view.__class__.__name__ == 'TopView':
+            return segment_ids, segmented_image, image_rgb
+        elif view.__class__.__name__ == 'PinholeView':
+            return segment_ids, segmented_image, image_rgb, K, pose
 
 
     def write(self, points: np.ndarray, segment_ids: np.ndarray, non_ground: np.ndarray = None, ground: np.ndarray = None, save_path: str = 'segmented.las') -> None:
@@ -394,6 +349,11 @@ class SamLidar:
         :return: None
         """
         start = time.time()
+
+        directory = os.path.dirname(save_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         extension = os.path.splitext(save_path)[1]
         try:
             if extension not in ['.laz', '.las']:
@@ -409,7 +369,6 @@ class SamLidar:
 
         header = laspy.LasHeader(point_format=3, version="1.3")
         lidar = laspy.LasData(header=header)
-
         if ground is not None:
             indices = np.concatenate((non_ground, ground))
             lidar.xyz = points[indices]

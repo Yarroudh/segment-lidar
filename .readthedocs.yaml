@@ -6,9 +6,10 @@ build:
     python: "3.9"
   jobs:
     pre_install:
-      - python -m pip install git+https://github.com/jianboqi/CSF
+      - python -m pip install sphinx-rtd-theme
+      - python -m pip install cloth-simulation-filter
       - python -m pip install -r requirements.txt
       - python -c "from samgeo import SamGeo; from samgeo.text_sam import LangSAM;"
 
 sphinx:
-   configuration: docs/source/conf.py
+  configuration: docs/source/conf.py

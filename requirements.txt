@@ -8,3 +8,4 @@ rasterio==1.3.7
 laspy==2.4.1
 laszip==0.2.3
 cloth-simulation-filter==1.1.4
+open3d==0.17.0
