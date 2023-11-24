@@ -155,7 +155,7 @@ The interactive mode allows you to interactively define the viewpoint using GUI.
    :align: center
    :alt: Interactive mode
 
-You can rotate, move and zoom the camera using the mouse (please refer to `Open3D documentation <http://www.open3d.org/docs/release/tutorial/visualization/visualization.html>`__ for more details).
+You can rotate, move and zoom the camera using the mouse (please refer to `Open3D documentation <http://www.open3d.org/docs/release/tutorial/visualization/visualization.html>`_ for more details).
 
 Once you are done, press **p** to save the image and the camera parameters, than **esc** to quit the interactive mode.
 
