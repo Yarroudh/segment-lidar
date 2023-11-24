@@ -109,14 +109,15 @@ $$ X_{W} = R \cdot (X_{C} - C_{0})$$
 
 $C_{0}$ is the camera center coordinates in the world-coordinate system: $C_{0} = -R^T \cdot T$
 
-The perspective projection gives us this
-
 $$ x = P \cdot X_{C}$$
 
-$(x, y)$ are normalized by the third coordinates $z$ and used to calculate the image-coordinates as follow:
+where $x = [u, v, w]$
 
-$u = \frac{x}{z}$
-$v = \frac{y}{z}$
+$(u, w)$ are normalized by the third coordinates $w$ and then used to calculate the image-coordinates as follow:
+
+$u = \frac{u}{w} - u_{0}$
+
+$v = \frac{v}{w} - v_{0}$
 
 ![Different viewpoints provided by SamLidar.\label{fig:views}](figures/viewpoints.png)
 
