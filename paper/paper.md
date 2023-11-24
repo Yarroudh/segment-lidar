@@ -88,12 +88,37 @@ This transformation is modeled by a pinhole camera, which mimics the perspective
 The camera has intrinsic parameters that define its internal properties. As shown in \autoref{fig:intrinsic}, these parameters include the focal length $f$ and the principal point $(u_{0}, v_{0})$ that are combined in a $3\times3$ camera matrix $K$:
 
 $$
-K = \begin{pmatrix}
+K = \begin{Bmatrix}
   f_{x} & 0 & u_{0} \\
   0 & f_{y} & v_{0} \\
   0 & 0 & 1
-\end{pmatrix}
+\end{Bmatrix}
 $$
+
+In addition to the internal parameters, the position and orientation of the camera in 3D space are described by extrinsic parameters. These include the $3\times3$ rotation matrix $R$ and the $3\times1$ translation vector $T$. Therefore, the camera projection matrix is defined as follow:
+
+$$P = K[R|T]$$
+
+The projection matrix $P$ is then used to calculate the pixel coordinates $(u, v)$ of a 3D point coordinates by: first, converting the world-coordinates $(X_{w}, Y_{w}, Z_{w})$ of the point to the camera-coordinate system $(X_{c}, Y_{c}, Z_{c})$, then the camera-coordinates to image-coordinates $(u, v)$.
+
+$$ \begin{bmatrix}
+X_{w} \\
+Y_{w} \\
+Z_{W}
+\end{bmatrix} = R \dot
+(\begin{bmatrix}
+X_{} \\
+Y_{c} \\
+Z_{c}
+\end{bmatrix} - \begin{bmatrix}
+X_{0} \\
+Y_{0} \\
+Z_{0}
+\end{bmatrix}
+$$
+
+$(X_{c0}, Y_{c0}, Z_{c0}) are the camera center coordinates $C$ in the world-coordinate system: $C = -R^T \dot T$
+
 
 ![Camera intrinsic parameters [@david:2019].\label{fig:intrinsic}](figures/intrinsic.jpg)
 
