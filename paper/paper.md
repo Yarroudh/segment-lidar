@@ -103,41 +103,15 @@ $$P = K[R|T]$$
 
 ![Pinhole camera model [@jerome:2022].\label{fig:extrinsic}](figures/extrinsic.jpg)
 
-The projection matrix $P$ is then used to calculate the pixel coordinates $(u, v)$ of a 3D point coordinates by: first, converting the world-coordinates $(X_{w}, Y_{w}, Z_{w})$ of the point to the camera-coordinate system $(X_{c}, Y_{c}, Z_{c})$, then the camera-coordinates to image-coordinates $(u, v)$.
+The projection matrix $P$ is then used to calculate the pixel coordinates $(u, v)$ of a 3D point coordinates by: first, converting the world-coordinates $(x_{w}, y_{w}, z_{w})$ of the point to the camera-coordinate system $(x_{c}, y_{c}, z_{c})$, then the camera-coordinates to image-coordinates $(u, v)$.
 
-$$ \begin{bmatrix}
-X_{c} \\
-Y_{c} \\
-Z_{c}
-\end{bmatrix} = R \dot
-\begin{bmatrix}
-X_{w} \\
-Y_{w} \\
-Z_{w}
-\end{bmatrix} - R \dot
-\begin{bmatrix}
-X_{0} \\
-Y_{0} \\
-Z_{0}
-\end{bmatrix}
-$$
+$$ X_{W} = R \dot (X_{C} - C_{0})$$
 
-$(X_{0}, Y_{0}, Z_{0})$ are the camera center coordinates $C$ in the world-coordinate system: $C = -R^T \dot T$
+$C_{0}$ is the camera center coordinates in the world-coordinate system: $C_{0} = -R^T \dot T$
 
 The perspective projection gives us this
 
-$$ \begin{bmatrix}
-x \\
-y \\
-z \\
-\end{bmatrix} = P \dot
-\begin{bmatrix}
-X_{c} \\
-Y_{c} \\
-Z_{c} \\
-1
-\end{bmatrix}
-$$
+$$ x = P \dot X_{C}$$
 
 $(x, y)$ are normalized by the third coordinates $z$ and used to calculate the image-coordinates as follow:
 
