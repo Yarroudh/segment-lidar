@@ -62,19 +62,24 @@ This projection is based on two possible view: top view and pinhole camera view.
 
 1. **Top Projection**:
 
-In a top view projection, the 3D coordinates (X, Y, Z) are projected onto the 2D coordinates (u, v) on the image plane (\autoref{fig:views}). The projection of each point is given by:
+In a top view projection, the 3D coordinates (X, Y, Z) are projected onto the 2D coordinates (u, v) on the image plane (\autoref{fig:views}).
+
+The projection of each point is given by:
 
 $$u = \frac{x - x_{min}}{d}$$
 $$v = \frac{y_{max} - y}{d}$$
 $$P_{uv} = (R, G, B)$$
 
-Where:
-
 `u` represents the horizontal axis in the image.
+
 `v` represents the vertical axis in the image.
+
 `x, y and z` are the point coordinates.
+
 `r, g and b` are the RGB colors of the point.
+
 `d` represents the pixel resolution.
+
 
 2. **Pinhole Camera View**:
 
@@ -83,15 +88,14 @@ This transformation is modeled by a pinhole camera, which mimics the perspective
 The camera has intrinsic parameters that define its internal properties. As shown in \autoref{fig:intrinsic}, these parameters include the focal length ($$f$$) and the principal point ($$(u_{0}, v_{0})$$) that are combined in a $$3\times3$$ camera matrix $$K$$:
 
 $$
-\begin{pmatrix}
+K = \begin{pmatrix}
   f_{x} & 0 & u_{0} \\
   0 & f_{y} & v_{0} \\
   0 & 0 & 1
 \end{pmatrix}
 $$
 
-![Camera intrinsic parameters [@david:2019].\label{fig:intrinsic}](figures/intrinsic.png)
-
+![Camera intrinsic parameters [@david:2019].\label{fig:intrinsic}](figures/intrinsic.jpg)
 
 ![Different viewpoints provided by SamLidar.\label{fig:views}](figures/viewpoints.png)
 
