@@ -105,13 +105,13 @@ $$P = K[R|T]$$
 
 The projection matrix $P$ is then used to calculate the pixel coordinates $(u, v)$ of a 3D point coordinates by: first, converting the world-coordinates $(x_{w}, y_{w}, z_{w})$ of the point to the camera-coordinate system $(x_{c}, y_{c}, z_{c})$, then the camera-coordinates to image-coordinates $(u, v)$.
 
-$$ X_{W} = R \dot (X_{C} - C_{0})$$
+$$ X_{W} = R \cdot (X_{C} - C_{0})$$
 
-$C_{0}$ is the camera center coordinates in the world-coordinate system: $C_{0} = -R^T \dot T$
+$C_{0}$ is the camera center coordinates in the world-coordinate system: $C_{0} = -R^T \cdot T$
 
 The perspective projection gives us this
 
-$$ x = P \dot X_{C}$$
+$$ x = P \cdot X_{C}$$
 
 $(x, y)$ are normalized by the third coordinates $z$ and used to calculate the image-coordinates as follow:
 
