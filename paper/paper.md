@@ -118,7 +118,7 @@ Z_{w}
 X_{0} \\
 Y_{0} \\
 Z_{0}
-\end{bmatrix}
+\end{bmatrix})
 $$
 
 $(X_{0}, Y_{0}, Z_{0})$ are the camera center coordinates $C$ in the world-coordinate system: $C = -R^T \dot T$
