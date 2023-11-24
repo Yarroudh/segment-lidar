@@ -63,6 +63,8 @@ The pinhole view can be defined either by providing the intrinsic and extrinsic 
 
     viewpoint = view.PinholeView(intrinsic=K, rotation=R, translation=T)
 
+K is a 3x3 intrinsic matrix, R is a 3x3 rotation matrix and T is a 3x1 translation vector.
+
 or by using the interactive mode:
 
 .. code-block:: python
@@ -99,7 +101,7 @@ labels `labels`:
 
 .. code-block:: python
 
-    labels, *_ = model.segment(points=cloud, image_path="raster.tif", labels_path="labeled.tif")
+    labels, *_ = model.segment(points=cloud, view=view, image_path="raster.tif", labels_path="labeled.tif")
 
 7. Save results to **.las/.laz** file using the **write** method of the SamLidar instance:
 
@@ -126,7 +128,7 @@ Now, the entire code should look like this:
     cloud, non_ground, ground = model.csf(points)
 
     # Segment the point cloud
-    labels, *_ = instance.segment(points=cloud, image_path="raster.tif", labels_path="labeled.tif")
+    labels, *_ = instance.segment(points=cloud, view=view, image_path="raster.tif", labels_path="labeled.tif")
 
     # Save results
     model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=labels, save_path="segmented.las")
