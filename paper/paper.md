@@ -132,7 +132,7 @@ The Segment-Anything Model (SAM) was used to generate masks for all objects in t
 
 ![Inference results using SAM and SamGeo (Top View).\label{fig:top_inference}](figures/top_inference.png)
 
-![Inference results using SAM (Pinhole Camera View).\label{fig:pinhole_inference}](figures/pinhole_inference.png)
+![Inference results using SAM (Pinhole Camera View).\label{fig:pinhole_inference}](figures/pinhole_inference.png){ width=55% }
 
 ## Step 4: Reprojection of results on the 3D point cloud
 
