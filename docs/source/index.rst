@@ -32,7 +32,6 @@ The latest source code is available at `GitHub
    installation
    tutorial
    module
-   citation
    license
 
 Support
