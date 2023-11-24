@@ -10,7 +10,7 @@ citation <https://github.com/Yarroudh/Optim3D/blob/main/CITATION.bib>`__.
 Additionally, please make sure to comply with any licensing terms and
 conditions associated with the use of this repository.
 
-.. note::
+.. code:: bibtex
 
     @misc{yarroudh:2023:samlidar,
         author = {Yarroudh, Anass},
