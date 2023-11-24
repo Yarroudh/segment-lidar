@@ -12,4 +12,4 @@ build:
       - python -c "from samgeo import SamGeo; from samgeo.text_sam import LangSAM;"
 
 sphinx:
-   configuration: docs/source/conf.py
+  configuration: docs/source/conf.py
