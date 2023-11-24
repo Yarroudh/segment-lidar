@@ -39,31 +39,38 @@ If you are using `segment-lidar`, we highly recommend that you take the time to 
 
 ## Basic tutorial
 
-A basic tutorial is available [here](https://yarroudh.gitbook.io/segment-lidar/tutorial/basic-usage).
-You can also refer to API for more information about different parameters.
+A basic tutorial is available [here](https://yarroudh.github.io/segment-lidar/tutorial.html).
+
+You can also refer to [API](https://yarroudh.github.io/segment-lidar/module.html) for more information about different parameters.
 
 ### Without ground filtering
 
 ```python
-from segment_lidar import samlidar
+from segment_lidar import samlidar, view
+
+viewpoint = view.TopView()
 
 model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
 points = model.read("pointcloud.las")
-labels, *_ = model.segment(points=points, image_path="raster.tif", labels_path="labeled.tif")
+labels, *_ = model.segment(points=points, view=view, image_path="raster.tif", labels_path="labeled.tif")
 model.write(points=points, segment_ids=labels, save_path="segmented.las")
 ```
 
 ### With ground filtering
 
 ```python
-from segment_lidar import samlidar
+from segment_lidar import samlidar, view
+
+viewpoint = view.TopView()
 
 model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
 points = model.read("pointcloud.las")
 cloud, non_ground, ground = model.csf(points)
-labels, *_ = model.segment(points=cloud, image_path="raster.tif", labels_path="labeled.tif")
+labels, *_ = model.segment(points=cloud, view=view, image_path="raster.tif", labels_path="labeled.tif")
 model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=labels, save_path="segmented.las")
 ```
+
+**Note**: The latest version of `segment-lidar` supports defining a custom pinhole camera, with or without interactive visualization, and save the view as an image. Please, refer to the [documentation](https://yarroudh.github.io/segment-lidar/tutorial.html#interactive-mode) for more details.
 
 ## Sample data
 
