@@ -68,7 +68,12 @@ The projection of each point is given by:
 
 $$u = \frac{x - x_{min}}{d}$$
 $$v = \frac{y_{max} - y}{d}$$
-$$P_{uv} = (R, G, B)$$
+$$P_{uv} = \begin{bmatrix}
+r \\
+g \\
+b
+\end{bmatrix}
+$$
 
 `u` represents the horizontal axis in the image.
 
@@ -115,9 +120,9 @@ where $x = [u, v, w]$
 
 $(u, w)$ are normalized by the third coordinates $w$ and then used to calculate the image-coordinates as follow:
 
-$u = \frac{u}{w} - u_{0}$
+$$u = \frac{u}{w} - u_{0}$$
 
-$v = \frac{v}{w} - v_{0}$
+$$v = \frac{v}{w} - v_{0}$$
 
 ![Different viewpoints provided by SamLidar.\label{fig:views}](figures/viewpoints.png)
 
