@@ -124,7 +124,7 @@ $$u = \frac{u}{w} - u_{0}$$
 
 $$v = \frac{v}{w} - v_{0}$$
 
-![Different viewpoints provided by SamLidar.\label{fig:views}](figures/viewpoints.png)
+![Different viewpoints provided by SamLidar.\label{fig:views}](figures/views.png)
 
 ## Step 3: Inference on the generated image
 
