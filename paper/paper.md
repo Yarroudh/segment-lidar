@@ -82,13 +82,13 @@ This transformation is modeled by a pinhole camera, which mimics the perspective
 
 The camera has intrinsic parameters that define its internal properties. As shown in \autoref{fig:intrinsic}, these parameters include the focal length ($$f$$) and the principal point ($$(u_{0}, v_{0})$$) that are combined in a $$3\times3$$ camera matrix $$K$$:
 
-\[
+$$\[
 \begin{pmatrix}
   f_{x} & 0 & u_{0} \\
   0 & f_{y} & v_{0} \\
   0 & 0 & 1
 \end{pmatrix}
-\]
+\]$$
 
 ![Camera intrinsic parameters [@david:2019].\label{fig:intrinsic}](figures/intrinsic.png)
 
