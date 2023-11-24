@@ -110,15 +110,16 @@ X_{c} \\
 Y_{c} \\
 Z_{c}
 \end{bmatrix} = R \dot
-(\begin{bmatrix}
+\begin{bmatrix}
 X_{w} \\
 Y_{w} \\
 Z_{w}
-\end{bmatrix} - \begin{bmatrix}
+\end{bmatrix} - R \dot
+\begin{bmatrix}
 X_{0} \\
 Y_{0} \\
 Z_{0}
-\end{bmatrix})
+\end{bmatrix}
 $$
 
 $(X_{0}, Y_{0}, Z_{0})$ are the camera center coordinates $C$ in the world-coordinate system: $C = -R^T \dot T$
