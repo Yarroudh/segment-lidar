@@ -85,7 +85,7 @@ $$P_{uv} = (R, G, B)$$
 
 This transformation is modeled by a pinhole camera, which mimics the perspective effects of capturing scenes through a small aperture. The camera maps points from a three-dimensional space to a two-dimensional image plane by combining intrinsic and extrinsic parameters.
 
-The camera has intrinsic parameters that define its internal properties. As shown in \autoref{fig:intrinsic}, these parameters include the focal length ($$f$$) and the principal point ($$(u_{0}, v_{0})$$) that are combined in a $$3\times3$$ camera matrix $$K$$:
+The camera has intrinsic parameters that define its internal properties. As shown in \autoref{fig:intrinsic}, these parameters include the focal length $f$ and the principal point $(u_{0}, v_{0})$ that are combined in a $3\times3$ camera matrix $K$:
 
 $$
 K = \begin{pmatrix}
