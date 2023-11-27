@@ -128,11 +128,11 @@ $$v = \frac{v}{w} - v_{0}$$
 
 ## Step 3: Inference on the generated image
 
-The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023]. Additionally, Segment-Geospatial [@wu:2023] is implemented to leverage SAM for geospatial analysis by enabling users to achieve results with minimal parameters tuning. The results for sample data are illustrated in \autoref{fig:top_inference}.
+The Segment-Anything Model (SAM) was used to generate masks for all objects in the resulting image [@kirillov:2023]. Additionally, Segment-Geospatial [@wu:2023] is implemented to leverage SAM for geospatial analysis by enabling users to achieve results with minimal parameters tuning. The results for sample data, for both top view and pinhole camera view, are illustrated in \autoref{fig:top_inference} and \autoref{fig:pinhole_inference} respectively.
 
 ![Inference results using SAM and SamGeo (Top View).\label{fig:top_inference}](figures/top_inference.png)
 
-![Inference results using SAM (Pinhole Camera View).\label{fig:pinhole_inference}](figures/pinhole_inference.png){ width=55% }
+![Inference results using SAM (Pinhole Camera View).\label{fig:pinhole_inference}](figures/pinhole_inference.png){ width=65% }
 
 ## Step 4: Reprojection of results on the 3D point cloud
 
@@ -140,7 +140,7 @@ In the final step of our methodology, we seamlessly reproject the instance segme
 
 ![Top view results.\label{fig:top_results}](figures/top_results.png)
 
-![Pinhole Camera view results.\label{fig:pinhole_results}](figures/top_results.png)
+![Pinhole Camera view results.\label{fig:pinhole_results}](figures/pinhole_results.png)
 
 # Use of the package
 
