@@ -140,7 +140,7 @@ In the final step of our methodology, we seamlessly reproject the instance segme
 
 ![Top view results.\label{fig:top_results}](figures/top_results.png)
 
-![Pinhole Camera view results.\label{fig:pinhole_results}](figures/pinhole_results.png)
+![Pinhole Camera view results.\label{fig:pinhole_results}](figures/pinhole_results.png){ width=70% }
 
 # Use of the package
 
