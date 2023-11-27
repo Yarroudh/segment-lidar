@@ -132,13 +132,15 @@ The Segment-Anything Model (SAM) was used to generate masks for all objects in t
 
 ![Inference results using SAM and SamGeo (Top View).\label{fig:top_inference}](figures/top_inference.png)
 
-![Inference results using SAM (Pinhole Camera View).\label{fig:pinhole_inference}](figures/pinhole_inference.png)
+![Inference results using SAM (Pinhole Camera View).\label{fig:pinhole_inference}](figures/pinhole_inference.png){ width=55% }
 
 ## Step 4: Reprojection of results on the 3D point cloud
 
-In the final step of our methodology, we seamlessly reproject the instance segmentation results onto the original point cloud (\autoref{fig:results}). This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
+In the final step of our methodology, we seamlessly reproject the instance segmentation results onto the original point cloud (\autoref{fig:top_results} and \autoref{fig:pinhole_results}). This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
 
-![Top view results.\label{fig:results}](figures/top_results.png)
+![Top view results.\label{fig:top_results}](figures/top_results.png)
+
+![Pinhole Camera view results.\label{fig:pinhole_results}](figures/top_results.png)
 
 # Use of the package
 
