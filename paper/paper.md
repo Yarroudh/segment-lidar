@@ -26,7 +26,7 @@ bibliography: paper.bib
 
 # Summary
 
-`Segment-Lidar` is a Python package for automatic unsupervised segmentation of aerial LiDAR data. It proposes an image-based approach for segmenting aerial point clouds using `Segment-Anthing Model (SAM)` package from [Meta AI](https://github.com/facebookresearch).
+`Segment-Lidar` is a Python package for automatic unsupervised segmentation of aerial LiDAR data. It proposes an image-based approach for segmenting aerial point clouds using `Segment-Anything Model (SAM)` package from [Meta AI](https://github.com/facebookresearch).
 
 The API provides functions and classes to define the segmentation model and its parameters, and also to handle transformation between 3D point clouds and images. The package also relies on another dependency that make use of `SAM`, which is `Segment-Geospatial` package from [Open Geospatial Solutions](https://github.com/opengeos) for segmenting geospatial data. It also makes use of `Grounding DINO` from [The International Digital Economy Academy Research (IDEA-Research)](https://github.com/IDEA-Research) to detect and segment the 3D point cloud with text prompts.
 
@@ -132,7 +132,7 @@ The Segment-Anything Model (SAM) was used to generate masks for all objects in t
 
 ## Step 4: Reprojection of results on the 3D point cloud
 
-In the final step of our methodology, we seamlessly reproject the instance segmentation results onto the original point cloud (\autoref{fig:top_results} and \autoref{fig:pinhole_results}). This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
+In the final step of our methodology, we seamlessly reproject the segmentation results onto the original point cloud (\autoref{fig:top_results} and \autoref{fig:pinhole_results}). This associates each point in the cloud with its corresponding segment label obtained from the 2D image segmentation. Mathematically, this process involves identifying the 2D image coordinates for each point in the point cloud, which can be achieved through reverse projection of the cubic or panoramic projection. Once the corresponding 2D image coordinates are identified, we assign the segment label from the segmentation map to the corresponding point in the cloud.
 
 ![Top view results.\label{fig:top_results}](figures/top_results.png)
 
