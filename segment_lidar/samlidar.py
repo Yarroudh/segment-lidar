@@ -17,7 +17,6 @@ import rasterio
 import laspy
 from segment_lidar.view import TopView, PinholeView
 
-
 class SamLidar:
     class mask:
         def __init__(self, crop_n_layers: int = 1, crop_n_points_downscale_factor: int = 1, min_mask_region_area: int = 200, points_per_side: int = 5, pred_iou_thresh: float = 0.90, stability_score_thresh: float = 0.92):
@@ -76,6 +75,14 @@ class SamLidar:
         :type device: str
         :param sam_kwargs: Whether to use the SAM kwargs when using 'segment-geospatial' as algorithm, defaults to False.
         :type sam_kwargs: bool
+        :param intrinsics: The intrinsics matrix, defaults to None.
+        :type intrinsics: np.ndarray
+        :param rotation: The rotation matrix, defaults to None.
+        :type rotation: np.ndarray
+        :param translation: The translation matrix, defaults to None.
+        :type translation: np.ndarray
+        :param interactive: A boolean indicating whether to use the interactive mode, defaults to False.
+        :type interactive: bool
         """
         self.algorithm = algorithm
         self.model_type = model_type
@@ -87,10 +94,10 @@ class SamLidar:
         self.device = torch.device('cuda:0') if device == 'cuda:0' and torch.cuda.is_available() else torch.device('cpu')
         self.mask = SamLidar.mask()
         self.text_prompt = SamLidar.text_prompt()
-        self.interactive = interactive
         self.intrinsics = intrinsics
         self.rotation = rotation
         self.translation = translation
+        self.interactive = interactive
 
         if algorithm == 'segment-anything':
             self.mask_generator = SamAutomaticMaskGenerator(
@@ -122,7 +129,6 @@ class SamLidar:
         )
 
         os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-
 
 
     def read(self, path: str, classification: int = None) -> np.ndarray:
@@ -184,7 +190,7 @@ class SamLidar:
         return points
 
 
-    def csf(self, points: np.ndarray, class_threshold: float = 0.5, cloth_resolution: float = 0.2, iterations: int = 500, slope_smooth: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def csf(self, points: np.ndarray, class_threshold: float = 0.5, cloth_resolution: float = 0.2, iterations: int = 500, slope_smooth: bool = False, csf_path: str = None, exists: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Applies the CSF (Cloth Simulation Filter) algorithm to filter ground points in a point cloud.
 
@@ -198,31 +204,61 @@ class SamLidar:
         :type iterations: int, optional
         :param slope_smooth: A boolean indicating whether to enable slope smoothing, defaults to False.
         :type slope_smooth: bool, optional
+        :param csf_path: The path to save the results, defaults to None.
+        :type csf_path: str, optional
+        :param exists: A boolean indicating whether the results already exist, defaults to False.
+        :type exists: bool, optional
         :return: A tuple containing three arrays: the filtered point cloud, non-ground (filtered) points indinces and ground points indices.
         :rtype: Tuple[np.ndarray, np.ndarray, np.ndarray]
         """
-        start = time.time()
-        print(f'Applying CSF algorithm...')
-        csf = CSF.CSF()
-        csf.params.bSloopSmooth = slope_smooth
-        csf.params.cloth_resolution = cloth_resolution
-        csf.params.interations = iterations
-        csf.params.class_threshold = class_threshold
-        csf.setPointCloud(points[:, :3])
-        ground = CSF.VecInt()
-        non_ground = CSF.VecInt()
-        csf.do_filtering(ground, non_ground)
+        if not exists:
+            start = time.time()
+            print(f'Applying CSF algorithm...')
+            csf = CSF.CSF()
+            csf.params.bSloopSmooth = slope_smooth
+            csf.params.cloth_resolution = cloth_resolution
+            csf.params.interations = iterations
+            csf.params.class_threshold = class_threshold
+            csf.setPointCloud(points[:, :3])
+            ground = CSF.VecInt()
+            non_ground = CSF.VecInt()
+            csf.do_filtering(ground, non_ground)
 
-        points = points[non_ground, :]
-        os.remove('cloth_nodes.txt')
+            cloud = points[non_ground, :]
+            os.remove('cloth_nodes.txt')
 
-        end = time.time()
-        print(f'CSF algorithm is completed in {end - start:.2f} seconds. The filtered non-ground cloud contains {points.shape[0]} points.\n')
+            if csf_path is not None:
+                print(f'Saving the filtered point cloud to {csf_path}...')
+                header = laspy.LasHeader(point_format=3, version="1.3")
+                lidar = laspy.LasData(header=header)
+                lidar.xyz = points[:, :3]
+                lidar.red = points[:, 3] * 255
+                lidar.green = points[:, 4] * 255
+                lidar.blue = points[:, 5] * 255
+                classification = np.full(points.shape[0], 0)
+                classification[ground] = 1
+                lidar.add_extra_dim(laspy.ExtraBytesParams(name="ground", type=np.int8))
+                lidar.ground = classification
+                lidar.write(csf_path)
 
-        return points, np.asarray(non_ground), np.asarray(ground)
+            end = time.time()
+            print(f'CSF algorithm is completed in {end - start:.2f} seconds. The filtered non-ground cloud contains {points.shape[0]} points.\n')
+
+        else:
+            print(f'Reading {csf_path}...')
+            las = laspy.read(csf_path)
+            ground = las[las.ground == 1]
+            ground = np.vstack((ground.x, ground.y, ground.z, ground.red / 255.0, ground.green / 255.0, ground.blue / 255.0)).transpose()
+            non_ground = las[las.ground == 0]
+            non_ground = np.vstack((non_ground.x, non_ground.y, non_ground.z, non_ground.red / 255.0, non_ground.green / 255.0, non_ground.blue / 255.0)).transpose()
+            las = las[las.ground == 0]
+            cloud = np.vstack((las.x, las.y, las.z, las.red / 255.0, las.green / 255.0, las.blue / 255.0)).transpose()
+            print(f'File reading is completed. The filtered non-ground cloud contains {non_ground.shape[0]} points.\n')
+
+        return cloud, np.asarray(non_ground), np.asarray(ground)
 
 
-    def segment(self, points: np.ndarray, view: Union[TopView, PinholeView] = TopView(), image_path: str = 'raster.tif', labels_path: str = 'labeled.tif') -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def segment(self, points: np.ndarray, view: Union[TopView, PinholeView] = TopView(), image_path: str = 'raster.tif', labels_path: str = 'labeled.tif', image_exists: bool = False, label_exists: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Segments a point cloud based on the provided parameters and returns the segment IDs, original image, and segmented image.
 
@@ -234,6 +270,10 @@ class SamLidar:
         :type image_path: str
         :param labels_path: Path to save the labeled output image, defaults to 'labeled.tif'.
         :type labels_path: str
+        :param image_exists: A boolean indicating whether the raster image already exists, defaults to False.
+        :type image_exists: bool
+        :param label_exists: A boolean indicating whether the labeled image already exists, defaults to False.
+        :type label_exists: bool
         :return: A tuple containing the segment IDs, segmented image, and RGB image.
         :rtype: Tuple[np.ndarray, np.ndarray, np.ndarray]
         """
@@ -244,9 +284,13 @@ class SamLidar:
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        print(f'Segmenting the point cloud...')
+        if image_exists:
+            print(f'- Reading raster image...')
+        else:
+            print(f'- Generating raster image...')
 
-        print(f'- Generating raster image...')
+        if label_exists:
+            print(f'- Reading segmented image...')
 
         if view.__class__.__name__ == 'TopView':
             image = view.cloud_to_image(points=points, resolution=self.resolution)
@@ -258,60 +302,62 @@ class SamLidar:
 
         image = np.asarray(image).astype(np.uint8)
 
-        print(f'- Saving raster image...')
-        with rasterio.open(
-            image_path,
-            'w',
-            driver='GTiff',
-            width=image.shape[1],
-            height=image.shape[0],
-            count=3,
-            dtype=image.dtype
-        ) as dst:
-            for i in range(3):
-                dst.write(image[:, :, i], i + 1)
+        if not image_exists:
+            print(f'- Saving raster image...')
+            with rasterio.open(
+                image_path,
+                'w',
+                driver='GTiff',
+                width=image.shape[1],
+                height=image.shape[0],
+                count=3,
+                dtype=image.dtype
+            ) as dst:
+                for i in range(3):
+                    dst.write(image[:, :, i], i + 1)
 
         with rasterio.open(image_path, 'r') as src:
             image_rgb = src.read()
 
-        print(f'- Applying {self.algorithm} to raster image...')
-        if self.algorithm == 'segment-anything':
-            sam = sam_model_registry[self.model_type](checkpoint=self.ckpt_path)
-            sam.to(self.device)
+        if not label_exists:
+            print(f'- Applying {self.algorithm} to raster image...')
+            if self.algorithm == 'segment-anything':
+                sam = sam_model_registry[self.model_type](checkpoint=self.ckpt_path)
+                sam.to(self.device)
 
-            image_rgb = image_rgb.transpose(1, 2, 0)
-            result = self.mask_generator.generate(image_rgb)
-            detections = sv.Detections.from_sam(result)
-            num_masks, height, width = detections.mask.shape
-            segmented_image = np.zeros((height, width), dtype=np.uint8)
-            for i in range(num_masks):
-                mask = detections.mask[i]
-                segmented_image[mask] = i
+                image_rgb = image_rgb.transpose(1, 2, 0)
+                result = self.mask_generator.generate(image_rgb)
+                detections = sv.Detections.from_sam(result)
+                num_masks, height, width = detections.mask.shape
+                segmented_image = np.zeros((height, width), dtype=np.uint8)
+                for i in range(num_masks):
+                    mask = detections.mask[i]
+                    segmented_image[mask] = i
 
-            print(f'- Saving segmented image...')
-            with rasterio.open(
-                labels_path,
-                'w',
-                driver='GTiff',
-                width=segmented_image.shape[1],
-                height=segmented_image.shape[0],
-                count=1,
-                dtype=segmented_image.dtype
-            ) as dst:
-                dst.write(segmented_image, 1)
-
-            print(f'- Saving segmented image...')
-
-        elif self.algorithm == 'segment-geospatial':
-            if self.text_prompt.text is not None:
-                print(f'- Generating labels using text prompt...')
-                sam = LangSAM()
-                sam.predict(image=image_path, text_prompt=self.text_prompt.text, box_threshold=self.text_prompt.box_threshold, text_threshold=self.text_prompt.text_threshold, output=labels_path)
                 print(f'- Saving segmented image...')
-            else:
-                sam = self.sam_geo
-                sam.generate(source=image_path, output=labels_path, erosion_kernel=(3, 3), foreground=True, unique=True)
+                with rasterio.open(
+                    labels_path,
+                    'w',
+                    driver='GTiff',
+                    width=segmented_image.shape[1],
+                    height=segmented_image.shape[0],
+                    count=1,
+                    dtype=segmented_image.dtype
+                ) as dst:
+                    dst.write(segmented_image, 1)
+
                 print(f'- Saving segmented image...')
+
+            elif self.algorithm == 'segment-geospatial':
+                if self.text_prompt.text is not None:
+                    print(f'- Generating labels using text prompt...')
+                    sam = LangSAM()
+                    sam.predict(image=image_path, text_prompt=self.text_prompt.text, box_threshold=self.text_prompt.box_threshold, text_threshold=self.text_prompt.text_threshold, output=labels_path)
+                    print(f'- Saving segmented image...')
+                else:
+                    sam = self.sam_geo
+                    sam.generate(source=image_path, output=labels_path, erosion_kernel=(3, 3), foreground=True, unique=True)
+                    print(f'- Saving segmented image...')
 
         with rasterio.open(labels_path, 'r') as src:
             segmented_image = src.read()
@@ -332,7 +378,7 @@ class SamLidar:
             return segment_ids, segmented_image, image_rgb, K, pose
 
 
-    def write(self, points: np.ndarray, segment_ids: np.ndarray, non_ground: np.ndarray = None, ground: np.ndarray = None, save_path: str = 'segmented.las') -> None:
+    def write(self, points: np.ndarray, segment_ids: np.ndarray, non_ground: np.ndarray = None, ground: np.ndarray = None, save_path: str = 'segmented.las', ground_path: str = None) -> None:
         """
         Writes the segmented point cloud data to a LAS/LAZ file.
 
@@ -351,8 +397,15 @@ class SamLidar:
         start = time.time()
 
         directory = os.path.dirname(save_path)
-        if not os.path.exists(directory):
+        if not os.path.exists(directory) and directory != '':
             os.makedirs(directory)
+
+        if ground_path is not None:
+            las = laspy.read(ground_path)
+            ground = las[las.classification == 1]
+            ground = np.vstack((ground.x, ground.y, ground.z, ground.red / 255.0, ground.green / 255.0, ground.blue / 255.0)).transpose()
+            non_ground = las[las.classification == 0]
+            non_ground = np.vstack((non_ground.x, non_ground.y, non_ground.z, non_ground.red / 255.0, non_ground.green / 255.0, non_ground.blue / 255.0)).transpose()
 
         extension = os.path.splitext(save_path)[1]
         try:
@@ -369,14 +422,34 @@ class SamLidar:
 
         header = laspy.LasHeader(point_format=3, version="1.3")
         lidar = laspy.LasData(header=header)
+
         if ground is not None:
-            indices = np.concatenate((non_ground, ground))
-            lidar.xyz = points[indices]
+            cloud = np.concatenate((ground, non_ground))
+
+            if cloud.ndim == 1:
+                indices = np.concatenate((non_ground, ground))
+                lidar.xyz = points[indices]
+                colors = points[indices, 3:]
+                if points.shape[1] > 3:
+                    lidar.red = colors[:, 0] * 255
+                    lidar.green = colors[:, 1] * 255
+                    lidar.blue = colors[:, 2] * 255
+            else:
+                lidar.xyz = cloud[:, :3]
+                if cloud.shape[1] > 3:
+                    lidar.red = cloud[:, 3] * 255
+                    lidar.green = cloud[:, 4] * 255
+                    lidar.blue = cloud[:, 5] * 255
+
             segment_ids = np.append(segment_ids, np.full(len(ground), -1))
             lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
             lidar.segment_id = segment_ids
         else:
-            lidar.xyz = points
+            lidar.xyz = points[:, :3]
+            if points.shape[1] > 3:
+                lidar.red = points[:, 3] * 255
+                lidar.green = points[:, 4] * 255
+                lidar.blue = points[:, 5] * 255
             lidar.add_extra_dim(laspy.ExtraBytesParams(name="segment_id", type=np.int32))
             lidar.segment_id = segment_ids
 

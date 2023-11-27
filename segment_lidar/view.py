@@ -22,7 +22,6 @@ class TopView:
         """
         pass
 
-
     def cloud_to_image(self, points: np.ndarray, resolution: float) -> np.ndarray:
         """
         Converts a point cloud to a planar image.
@@ -100,7 +99,7 @@ class TopView:
         unique_values = {}
         image = np.asarray(image)
 
-        for point in points:
+        for i, point in enumerate(points):
             x, y, z, *_ = point
 
             pixel_x = int((x - minx) / resolution)
@@ -117,6 +116,7 @@ class TopView:
 
             id = unique_values[rgb]
             segment_ids.append(id)
+
         return segment_ids
 
 
@@ -239,8 +239,10 @@ class PinholeView:
             dir_path = os.getcwd()
             files = os.listdir(dir_path)
             files = [file for file in files if file.startswith('Screen')]
-            image_path = [file for file in files if file.endswith('.png')][0]
-            camera_path = [file for file in files if file.endswith('.json')][0]
+            image_path = [file for file in files if file.endswith('.png')]
+            image_path = sorted(image_path, reverse=True)[0]
+            camera_path = [file for file in files if file.endswith('.json')]
+            camera_path = sorted(camera_path, reverse=True)[0]
 
             # Load the image
             image = cv2.imread(image_path)
