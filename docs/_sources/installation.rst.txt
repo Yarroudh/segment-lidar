@@ -18,7 +18,20 @@ This command will create a new Conda environment named **samlidar**. We recommen
 
 Please note that using a Conda environment is not mandatory, but it is highly recommended. Alternatively, you can use `virtualenv <https://virtualenv.pypa.io/en/latest/>`__.
 
-Step 2: Install segment-lidar
+Step 2: Install PyTorch
+-----------------------
+
+For the installation instructions and options, refer to the official PyTorch website: `PyTorch Get Started <https://pytorch.org/get-started/locally/>`__.
+
+.. note::
+
+    If you want to leverage GPU acceleration with PyTorch,
+    make sure you have a CUDA-supported GPU and install the corresponding
+    CUDA toolkit. Follow the instructions in the official CUDA installation guide:
+    `NVIDIA CUDA Installation Guide <https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html>`__.
+
+
+Step 3: Install segment-lidar
 -----------------------------
 
 You can easily install **segment-lidar** from `PyPI <https://pypi.org/project/segment-lidar/>`__ using the following command:
