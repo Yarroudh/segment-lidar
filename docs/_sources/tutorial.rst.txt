@@ -138,7 +138,7 @@ For visualization and further processing, we recommand using `CloudCompare <http
 
 The following figure shows the results of the segmentation on the sample data form AHN-4:
 
-.. image:: _static/results.gif
+.. image:: _static/results.png
    :width: 100%
    :align: center
    :alt: Segmented point cloud

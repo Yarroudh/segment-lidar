@@ -38,5 +38,5 @@ The latest source code is available at `GitHub
 Support
 -------
 
-Please, contact as via email ayarroudh@uliege.be or akharroubi@uliege.be for questions and the `GitHub issue tracker
+Please, contact us via email ayarroudh@uliege.be or akharroubi@uliege.be for questions and the `GitHub issue tracker
 <https://github.com/Yarroudh/segment-lidar>`_ for bug reports, feature requests/additions, etc.
