@@ -1,0 +1,22 @@
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: TeX
+        uses: docker://openjournals/paperdraft:latest
+        with:
+          args: joss/paper.md --to=latex --output=paper.tex
+        env:
+          GIT_SHA: $GITHUB_SHA
+          JOURNAL: joss
+      - name: PDF
+        uses: docker://openjournals/paperdraft:latest
+        with:
+          args: joss/paper.md
+        env:
+          GIT_SHA: $GITHUB_SHA
+          JOURNAL: joss
+      - uses: actions/upload-artifact@v2
+        with:
+          path: joss
