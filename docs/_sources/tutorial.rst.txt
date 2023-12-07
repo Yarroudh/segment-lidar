@@ -101,7 +101,7 @@ labels `labels`:
 
 .. code-block:: python
 
-    labels, *_ = model.segment(points=cloud, view=view, image_path="raster.tif", labels_path="labeled.tif")
+    labels, *_ = model.segment(points=cloud, view=viewpoint, image_path="raster.tif", labels_path="labeled.tif")
 
 7. Save results to **.las/.laz** file using the **write** method of the SamLidar instance:
 
@@ -116,7 +116,7 @@ Now, the entire code should look like this:
     from segment_lidar import samlidar, view
 
     # Define viewpoint
-    view = view.TopView()
+    viewpoint = view.TopView()
 
     # Create SamLidar instance
     model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
@@ -128,7 +128,7 @@ Now, the entire code should look like this:
     cloud, non_ground, ground = model.csf(points)
 
     # Segment the point cloud
-    labels, *_ = instance.segment(points=cloud, view=view, image_path="raster.tif", labels_path="labeled.tif")
+    labels, *_ = instance.segment(points=cloud, view=viewpoint, image_path="raster.tif", labels_path="labeled.tif")
 
     # Save results
     model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=labels, save_path="segmented.las")
@@ -168,7 +168,7 @@ Example:
     import os
     from segment_lidar import samlidar, view
 
-    view = view.PinholeView(interactive=True)
+    viewpoint = view.PinholeView(interactive=True)
 
     model = samlidar.SamLidar(ckpt_path='sam_vit_h_4b8939.pth',
                             device='cuda:0',
@@ -184,7 +184,7 @@ Example:
     os.makedirs("results/", exist_ok=True)
 
     labels, *_ = model.segment(points=points,
-                            view=view,
+                            view=viewpoint,
                             image_path="results/raster.tif",
                             labels_path="results/labeled.tif")
 

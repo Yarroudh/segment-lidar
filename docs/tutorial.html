@@ -165,7 +165,7 @@ method requires the filtered point cloud <cite>cloud</cite> as input, and you ca
 an image path <cite>image_path</cite> and labels path <cite>labels_path</cite> to save the segmentation
 results as an image and labels, respectively. The segment method returns the segmentation
 labels <cite>labels</cite>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">cloud</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">view</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;raster.tif&quot;</span><span class="p">,</span> <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;labeled.tif&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">cloud</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">viewpoint</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;raster.tif&quot;</span><span class="p">,</span> <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;labeled.tif&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="7">
@@ -178,7 +178,7 @@ labels <cite>labels</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">segment_lidar</span> <span class="kn">import</span> <span class="n">samlidar</span><span class="p">,</span> <span class="n">view</span>
 
 <span class="c1"># Define viewpoint</span>
-<span class="n">view</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">TopView</span><span class="p">()</span>
+<span class="n">viewpoint</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">TopView</span><span class="p">()</span>
 
 <span class="c1"># Create SamLidar instance</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">samlidar</span><span class="o">.</span><span class="n">SamLidar</span><span class="p">(</span><span class="n">ckpt_path</span><span class="o">=</span><span class="s2">&quot;sam_vit_h_4b8939.pth&quot;</span><span class="p">)</span>
@@ -190,7 +190,7 @@ labels <cite>labels</cite>:</p>
 <span class="n">cloud</span><span class="p">,</span> <span class="n">non_ground</span><span class="p">,</span> <span class="n">ground</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">csf</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
 
 <span class="c1"># Segment the point cloud</span>
-<span class="n">labels</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">cloud</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">view</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;raster.tif&quot;</span><span class="p">,</span> <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;labeled.tif&quot;</span><span class="p">)</span>
+<span class="n">labels</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">cloud</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">viewpoint</span><span class="p">,</span> <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;raster.tif&quot;</span><span class="p">,</span> <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;labeled.tif&quot;</span><span class="p">)</span>
 
 <span class="c1"># Save results</span>
 <span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">non_ground</span><span class="o">=</span><span class="n">non_ground</span><span class="p">,</span> <span class="n">ground</span><span class="o">=</span><span class="n">ground</span><span class="p">,</span> <span class="n">segment_ids</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;segmented.las&quot;</span><span class="p">)</span>
@@ -214,7 +214,7 @@ For visualization and further processing, we recommand using <a class="reference
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">segment_lidar</span> <span class="kn">import</span> <span class="n">samlidar</span><span class="p">,</span> <span class="n">view</span>
 
-<span class="n">view</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">PinholeView</span><span class="p">(</span><span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">viewpoint</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">PinholeView</span><span class="p">(</span><span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">samlidar</span><span class="o">.</span><span class="n">SamLidar</span><span class="p">(</span><span class="n">ckpt_path</span><span class="o">=</span><span class="s1">&#39;sam_vit_h_4b8939.pth&#39;</span><span class="p">,</span>
                         <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">,</span>
@@ -230,7 +230,7 @@ For visualization and further processing, we recommand using <a class="reference
 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;results/&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">labels</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-                        <span class="n">view</span><span class="o">=</span><span class="n">view</span><span class="p">,</span>
+                        <span class="n">view</span><span class="o">=</span><span class="n">viewpoint</span><span class="p">,</span>
                         <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;results/raster.tif&quot;</span><span class="p">,</span>
                         <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;results/labeled.tif&quot;</span><span class="p">)</span>
 
