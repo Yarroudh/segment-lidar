@@ -3,7 +3,7 @@
 # segment-lidar
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://github.com/Yarroudh/ZRect3D/blob/main/LICENSE)
 [![Geomatics Unit of ULiege - Development](https://img.shields.io/badge/Geomatics_Unit_of_ULiege-Development-2ea44f)](http://geomatics.ulg.ac.be/)
-[![read - documentation](https://img.shields.io/static/v1?label=read&message=documentation&color=orange)](https://yarroudh.gitbook.io/segment-lidar/)
+[![read - documentation](https://img.shields.io/static/v1?label=read&message=documentation&color=orange)](https://yarroudh.github.io/segment-lidar/)
 
 <img src="https://github.com/Yarroudh/segment-lidar/assets/72500344/0b9450b3-3a2a-4644-b61f-3d5deaa3d077" alt="logo" width=200 />
 
@@ -52,7 +52,7 @@ viewpoint = view.TopView()
 
 model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
 points = model.read("pointcloud.las")
-labels, *_ = model.segment(points=points, view=view, image_path="raster.tif", labels_path="labeled.tif")
+labels, *_ = model.segment(points=points, view=viewpoint, image_path="raster.tif", labels_path="labeled.tif")
 model.write(points=points, segment_ids=labels, save_path="segmented.las")
 ```
 
@@ -66,7 +66,7 @@ viewpoint = view.TopView()
 model = samlidar.SamLidar(ckpt_path="sam_vit_h_4b8939.pth")
 points = model.read("pointcloud.las")
 cloud, non_ground, ground = model.csf(points)
-labels, *_ = model.segment(points=cloud, view=view, image_path="raster.tif", labels_path="labeled.tif")
+labels, *_ = model.segment(points=cloud, view=viewpoint, image_path="raster.tif", labels_path="labeled.tif")
 model.write(points=points, non_ground=non_ground, ground=ground, segment_ids=labels, save_path="segmented.las")
 ```
 
