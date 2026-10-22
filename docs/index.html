@@ -1,145 +1,59 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to segment-lidar’s documentation! &mdash; segment-lidar  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>segment-lidar 0.3.0</title>
+  <style>
+    :root{color-scheme:light;background:#f5f7fa;color:#17212b;font:16px/1.6 system-ui,sans-serif}
+    body{max-width:860px;margin:0 auto;padding:2rem 1.25rem 5rem}
+    h1,h2{line-height:1.2}h1{font-size:2.6rem}h2{margin-top:2.7rem}
+    a{color:#0757a6}nav{display:flex;gap:1rem;flex-wrap:wrap}
+    pre{overflow:auto;background:#e9eef4;padding:1.1rem;border-radius:8px}
+    code{font:0.9em ui-monospace,monospace}img{width:100%;border-radius:12px}
+    .note{border-left:4px solid #0757a6;padding:.4rem 1rem;background:#e9eef4}
+  </style>
 </head>
-
-<body class="wy-body-for-nav">
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-
-
-          <a href="#" class="icon icon-home">
-            segment-lidar
-          </a>
-              <div class="version">
-                0.2.1
-              </div>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Basic tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-</ul>
-
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">segment-lidar</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to segment-lidar’s documentation!</li>
-      <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/yarroudh/segment-lidar/blob/index.rst" class="fa fa-github"> Edit on GitHub</a>
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-
-  <section id="welcome-to-segment-lidar-s-documentation">
-<h1>Welcome to segment-lidar’s documentation!<a class="headerlink" href="#welcome-to-segment-lidar-s-documentation" title="Link to this heading"></a></h1>
-<section id="about">
-<h2>About<a class="headerlink" href="#about" title="Link to this heading"></a></h2>
-<p>The package <strong>segment-lidar</strong> is specifically designed for unsupervised instance segmentation of aerial LiDAR data. It brings together the power of Segment-Anything Model (SAM) developed by Meta Research and segment-geospatial (SamGeo) package from Open Geospatial Solutions to automatize the segmentation of LiDAR data.
-If you use this package for your research, please cite:</p>
-<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">yarroudh:2023:samlidar</span><span class="p">,</span>
-<span class="w">   </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Yarroudh, Anass}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{LiDAR Automatic Unsupervised Segmentation using Segment-Anything Model (SAM) from Meta AI}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2023}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">howpublished</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{GitHub Repository}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://github.com/Yarroudh/segment-lidar}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The paper will be published very soon.</p>
-</div>
-<p>The latest source code is available at <a class="reference external" href="https://github.com/Yarroudh/segment-lidar">GitHub</a>. The package builds on top of existing works and when using specific algorithms within segment-lidar, please also cite the original authors, as specified in the source code.</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Basic tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-</ul>
-</div>
-</section>
-<section id="support">
-<h2>Support<a class="headerlink" href="#support" title="Link to this heading"></a></h2>
-<p>Please, contact us via email <a class="reference external" href="mailto:ayarroudh&#37;&#52;&#48;uliege&#46;be">ayarroudh<span>&#64;</span>uliege<span>&#46;</span>be</a> or <a class="reference external" href="mailto:akharroubi&#37;&#52;&#48;uliege&#46;be">akharroubi<span>&#64;</span>uliege<span>&#46;</span>be</a> for questions and the <a class="reference external" href="https://github.com/Yarroudh/segment-lidar">GitHub issue tracker</a> for bug reports, feature requests/additions, etc.</p>
-<iframe src="https://github.com/sponsors/Yarroudh/card" title="Sponsor Yarroudh" height="225" width="600" style="border: 0;"></iframe>
-</section>
-</section>
-
-
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Geomatics Unit - University of Liège.</p>
-  </div>
-
-
-
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
+<body>
+  <h1>segment-lidar 0.3.0</h1>
+  <p>Project LiDAR clouds to images, find objects with SAM 3, and transfer labels to 3D points.</p>
+  <img src="https://raw.githubusercontent.com/Yarroudh/segment-lidar/main/assets/workflow.gif" alt="Rotating Sao Paulo aerial LiDAR before and after prompted SAM 3 instances">
+  <p>The animation uses 5,556,802 RGB points from the <a href="https://registry.opendata.aws/pmsp-lidar/">Sao Paulo M3DC aerial LiDAR archive</a>, licensed under GPL 3.0. The <code>buildings</code> and <code>tree</code> prompts generated 124 masks. After overlap was resolved, 115 visible labels reached 2,907,279 points. The 1600 by 900 perspective animation draws a fixed 1,600,000 point sample from the urban part of the tile. Building instances use warm colors, tree instances use green colors, and gray means no label.</p>
+  <nav><a href="#access">Model access</a><a href="#install">Install</a><a href="#example">Example</a><a href="#boxes">Boxes</a><a href="#docker">Docker</a><a href="#labels">Saved labels</a></nav>
+  <h2 id="access">Get access to SAM 3</h2>
+  <ol>
+    <li>Sign in and open the <a href="https://huggingface.co/facebook/sam3">SAM 3 model page</a>.</li>
+    <li>Read the conditions, request access, and agree to share the requested information with Meta. Wait for approval if review is required.</li>
+    <li>Create a <a href="https://huggingface.co/settings/tokens">Hugging Face token</a> with read access to the model.</li>
+    <li>Provide the token as <code>HF_TOKEN</code> or pass it as <code>hf_token</code> to <code>SamLidar</code>.</li>
+  </ol>
+  <p class="note">Access requests must be made in a browser. A token from an account without approval cannot download the model.</p>
+  <h2 id="install">Install</h2>
+  <pre><code>python -m pip install "segment-lidar[sam3]"</code></pre>
+  <p>Python 3.10 or newer is required. A CUDA GPU is recommended for inference.</p>
+  <h2 id="example">Automatic masks</h2>
+  <pre><code>from segment_lidar import SamLidar, TopView
+model = SamLidar(resolution=0.25)
+points = model.read("pointcloud.las")
+ids, labels, image = model.segment(points, view=TopView())
+model.write(points, ids, save_path="segmented.las")</code></pre>
+  <p>The <a href="https://huggingface.co/facebook/sam3#automatic-mask-generation-with-pipeline">SAM 3 mask generation pipeline</a> samples a 32 by 32 point grid by default. Set <code>model.automatic_masks.points_per_crop</code> to change grid density. The model loads from Hugging Face on the first inference call and runs locally after download. The token is never written to output files.</p>
+  <h2>Text prompt</h2>
+  <pre><code>ids, labels, image = model.segment(points, prompt="tree")</code></pre>
+  <h2 id="boxes">Box prompts</h2>
+  <p>Use image pixel coordinates in the form <code>[left, top, right, bottom]</code>. Label 1 means include and 0 means exclude. Text and boxes may be combined.</p>
+  <pre><code>ids, labels, image = model.segment(
+    points, prompt="tree",
+    boxes=[[80, 40, 180, 220], [210, 30, 300, 160]],
+    box_labels=[1, 0],
+)</code></pre>
+  <h2 id="labels">Saved labels</h2>
+  <p>Provide <code>image_exists=True</code> and <code>label_exists=True</code> to use saved rasters without a token. Raster value 0 is background; unmatched points receive <code>-1</code>. Top view rasters include a spatial transform so a subset of the cloud can use a saved image.</p>
+  <h2 id="docker">Docker</h2>
+  <p>The image includes the SAM 3 runtime. Supply your token only at run time through a local <code>.env</code> file.</p>
+  <pre><code>docker build -t segment-lidar:0.3.0 .
+docker run --rm --gpus all --env-file .env -v "$PWD/data:/data" \
+  segment-lidar:0.3.0 python /data/process.py</code></pre>
+  <p>See the <a href="https://github.com/Yarroudh/segment-lidar#readme">full guide</a> for pinhole cameras, ground filtering, and migration notes.</p>
 </body>
 </html>

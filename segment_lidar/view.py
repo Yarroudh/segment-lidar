@@ -1,313 +1,175 @@
-# Copyright (c) 2023 - University of Liège
-# Author : Anass Yarroudh (ayarroudh@uliege.be), Geomatics Unit of ULiege
-# This file is distributed under the BSD-3 licence. See LICENSE file for complete text of the license.
+"""Project point clouds into images and lift image labels back to points."""
+
+from __future__ import annotations
 
 import numpy as np
-from typing import Tuple
-import cv2
-import open3d as o3d
-import matplotlib.pyplot as plt
-import json
-import os
-import time
+
+
+def _points(points: np.ndarray) -> np.ndarray:
+    points = np.asarray(points)
+    if points.ndim != 2 or points.shape[1] not in (3, 6) or len(points) == 0:
+        raise ValueError("points must be a nonempty array of shape (N, 3) or (N, 6)")
+    if not np.isfinite(points).all():
+        raise ValueError("points must contain only finite values")
+    return points
+
+
+def _colors(points: np.ndarray) -> np.ndarray:
+    if points.shape[1] == 3:
+        return np.full((len(points), 3), 255, dtype=np.uint8)
+    colors = points[:, 3:6]
+    if colors.size and colors.max() <= 1:
+        colors = colors * 255
+    return np.clip(np.rint(colors), 0, 255).astype(np.uint8)
+
+
+def _labels_at(image: np.ndarray, x: np.ndarray, y: np.ndarray, valid: np.ndarray) -> np.ndarray:
+    image = np.asarray(image)
+    if image.ndim not in (2, 3):
+        raise ValueError("label image must have shape (H, W) or (H, W, C)")
+    valid &= (x >= 0) & (y >= 0) & (x < image.shape[1]) & (y < image.shape[0])
+    labels = np.full(len(x), -1, dtype=np.int32)
+    if image.ndim == 2:
+        values = image[y[valid], x[valid]]
+        labels[valid] = np.where(values > 0, values, -1).astype(np.int32)
+    else:
+        pixels = image[y[valid], x[valid], :3]
+        unique, inverse = np.unique(pixels, axis=0, return_inverse=True)
+        ids = inverse.astype(np.int32) + 1
+        ids[np.all(unique[inverse] == 0, axis=1)] = -1
+        labels[valid] = ids
+    return labels
 
 
 class TopView:
-    """
-    The TopView class converts a point cloud to a top view image and vice versa.
-    """
-    def __init__(self) -> None:
-        """
-        Initializes a new instance of the CubicView class.
-        """
-        pass
+    """Orthographic top view, with the highest point visible in each pixel."""
+
+    def _pixels(
+        self, points: np.ndarray, resolution: float
+    ) -> tuple[np.ndarray, np.ndarray, int, int]:
+        points = _points(points)
+        if not np.isfinite(resolution) or resolution <= 0:
+            raise ValueError("resolution must be positive and finite")
+        minx, miny = points[:, :2].min(axis=0)
+        maxx, maxy = points[:, :2].max(axis=0)
+        x = np.floor((points[:, 0] - minx) / resolution + 1e-9).astype(np.int64)
+        y = np.floor((maxy - points[:, 1]) / resolution + 1e-9).astype(np.int64)
+        width = int(np.floor((maxx - minx) / resolution + 1e-9)) + 1
+        height = int(np.floor((maxy - miny) / resolution + 1e-9)) + 1
+        return x, y, width, height
 
     def cloud_to_image(self, points: np.ndarray, resolution: float) -> np.ndarray:
-        """
-        Converts a point cloud to a planar image.
-
-        :param points: An array of points in the cloud, where each row represents a point.
-                    The array shape can be (N, 3) or (N, 6).
-                    If the shape is (N, 3), each point is assumed to have white color (255, 255, 255).
-                    If the shape is (N, 6), the last three columns represent the RGB color values for each point.
-        :type points: ndarray
-        :param minx: The minimum x-coordinate value of the cloud bounding box.
-        :type minx: float
-        :param maxx: The maximum x-coordinate value of the cloud bounding box.
-        :type maxx: float
-        :param miny: The minimum y-coordinate value of the cloud bounding box.
-        :type miny: float
-        :param maxy: The maximum y-coordinate value of the cloud bounding box.
-        :type maxy: float
-        :param resolution: The resolution of the image in units per pixel.
-        :type resolution: float
-        :return: An image array representing the point cloud, where each pixel contains the RGB color values
-                of the corresponding point in the cloud.
-        :rtype: ndarray
-        :raises ValueError: If the shape of the points array is not valid or if any parameter is invalid.
-        """
-        minx, maxx = np.min(points[:, 0]), np.max(points[:, 0])
-        miny, maxy = np.min(points[:, 1]), np.max(points[:, 1])
-        minz, maxz = np.min(points[:, 2]), np.max(points[:, 2])
-
-        width = int((maxx - minx) / resolution) + 1
-        height = int((maxy - miny) / resolution) + 1
-
+        points = _points(points)
+        x, y, width, height = self._pixels(points, resolution)
         image = np.zeros((height, width, 3), dtype=np.uint8)
-        for i, point in enumerate(points):
-            if points.shape[1] == 3:
-                x, y, z, *_ = point
-                r, g, b = np.array([255, 255, 255])
-            else:
-                x, y, z, r, g, b = point
-
-            pixel_x = int((x - minx) / resolution)
-            pixel_y = int((maxy - y) / resolution)
-            criterion = z
-
-            closest_criterion = np.zeros((height, width), dtype=np.float32)
-            closest_criterion[pixel_y, pixel_x] = criterion
-
-            if criterion >= closest_criterion[pixel_y, pixel_x]:
-                image[pixel_y, pixel_x] = np.array([r, g, b])
-
+        flat = y * width + x
+        order = np.lexsort((points[:, 2], flat))
+        winners = order[np.r_[flat[order][1:] != flat[order][:-1], True]]
+        image[y[winners], x[winners]] = _colors(points)[winners]
         return image
 
-
-    def image_to_cloud(self, points: np.ndarray, image: np.ndarray, resolution: float) -> np.ndarray:
-        """
-        Converts an image to a point cloud.
-
-        :param points: An array of points in the cloud, where each row represents a point.
-                    The array shape can be (N, 3) or (N, 6).
-                    If the shape is (N, 3), each point is assumed to have white color (255, 255, 255).
-                    If the shape is (N, 6), the last three columns represent the RGB color values for each point.
-        :type points: ndarray
-        :param image: An image array representing the point cloud, where each pixel contains the RGB color values of the corresponding point in the cloud.
-        :type image: ndarray
-        :param resolution: The resolution of the image in units per pixel.
-        :type resolution: float
-        :return: An array of segments' IDs in the cloud, where each row represents the segment's ID of a point.
-        :rtype: ndarray
-        :raises ValueError: If the shape of the points array is not valid or if any parameter is invalid.
-        """
-        minx, maxx = np.min(points[:, 0]), np.max(points[:, 0])
-        miny, maxy = np.min(points[:, 1]), np.max(points[:, 1])
-        minz, maxz = np.min(points[:, 2]), np.max(points[:, 2])
-
-        segment_ids = []
-        unique_values = {}
-        image = np.asarray(image)
-
-        for i, point in enumerate(points):
-            x, y, z, *_ = point
-
-            pixel_x = int((x - minx) / resolution)
-            pixel_y = int((maxy - y) / resolution)
-
-            if not (0 <= pixel_x < image.shape[1]) or not (0 <= pixel_y < image.shape[0]):
-                segment_ids.append(-1)
-                continue
-
-            rgb = image[pixel_y, pixel_x]
-
-            if rgb not in unique_values:
-                unique_values[rgb] = len(unique_values)
-
-            id = unique_values[rgb]
-            segment_ids.append(id)
-
-        return segment_ids
+    def image_to_cloud(
+        self, points: np.ndarray, image: np.ndarray, resolution: float, transform=None
+    ) -> np.ndarray:
+        if transform is None:
+            x, y, _, _ = self._pixels(points, resolution)
+        else:
+            points = _points(points)
+            inverse = ~transform
+            x = np.floor(
+                inverse.a * points[:, 0] + inverse.b * points[:, 1] + inverse.c + 1e-9
+            ).astype(np.int64)
+            y = np.floor(
+                inverse.d * points[:, 0] + inverse.e * points[:, 1] + inverse.f + 1e-9
+            ).astype(np.int64)
+        return _labels_at(image, x, y, np.ones(len(x), dtype=bool))
 
 
 class PinholeView:
-    """
-    The PinholeView class converts a point cloud to a pinhole camera view image and vice versa.
-    """
-    def __init__(self, interactive: bool = True) -> None:
-        """
-        Initializes a new instance of the CustomCameraView class.
-        """
+    """Pinhole projection using a 4 by 4 world to camera pose and 3 by 3 intrinsics."""
+
+    def __init__(self, interactive: bool = False) -> None:
         self.interactive = interactive
-        pass
 
-    def cloud_to_image(self, points: np.ndarray, resolution: float = 0.1, rotation: np.ndarray = None, translation: np.ndarray = None, intrinsics: np.ndarray = None, distance_threshold: float = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Converts a point cloud to an image.
+    @staticmethod
+    def _camera(rotation, translation, intrinsics):
+        rotation = np.asarray(rotation, dtype=float)
+        translation = np.asarray(translation, dtype=float).reshape(-1)
+        intrinsics = np.asarray(intrinsics, dtype=float)
+        if rotation.shape != (3, 3) or translation.shape != (3,) or intrinsics.shape != (3, 3):
+            raise ValueError(
+                "rotation, translation and intrinsics must have shapes (3,3), (3,), (3,3)"
+            )
+        if not all(np.isfinite(a).all() for a in (rotation, translation, intrinsics)):
+            raise ValueError("camera parameters must be finite")
+        if intrinsics[0, 0] <= 0 or intrinsics[1, 1] <= 0:
+            raise ValueError("camera focal lengths must be positive")
+        pose = np.eye(4)
+        pose[:3, :3], pose[:3, 3] = rotation, translation
+        return pose, intrinsics
 
-        :param extrinsics: The extrinsics matrix of the camera.
-        :type extrinsics: ndarray (4x4)
-        :param intrinsics: The intrinsics matrix of the camera.
-        :type intrinsics: ndarray (width, height, fx, fy, cx, cy) (6x1)
-        :param points: An array of points in the cloud, where each row represents a point.
-                    The array shape can be (N, 3) or (N, 6).
-                    If the shape is (N, 3), each point is assumed to have white color (255, 255, 255).
-                    If the shape is (N, 6), the last three columns represent the RGB color values for each point.
-        :type points: ndarray
-        :param resolution: The resolution of the image in units per pixel.
-        :type resolution: float
-        :param distance_threshold: An optional distance threshold. Points with distances greater than this threshold are ignored.
-        :type distance_threshold: float
-        :return: A tuple containing:
-            - An image array representing the point cloud, where each pixel contains the RGB color values of the corresponding point in the cloud.
-            - An array of pixel x-coordinates in the image.
-            - An array of pixel y-coordinates in the image.
-        :rtype: tuple of ndarrays
-        :raises ValueError: If the shape of the points array is not valid or if any parameter is invalid.
-        """
+    @staticmethod
+    def _project(points, intrinsics, pose):
+        camera = points[:, :3] @ pose[:3, :3].T + pose[:3, 3]
+        depth = camera[:, 2]
+        valid = np.isfinite(depth) & (depth > 0)
+        xy = np.zeros((len(points), 2), dtype=float)
+        xy[valid] = camera[valid, :2] / depth[valid, None]
+        uv = xy @ intrinsics[:2, :2].T + intrinsics[:2, 2]
+        return np.floor(uv).astype(np.int64), depth, valid
 
-        # Calculate the width and height of the image
-        minx, maxx = np.min(points[:, 0]), np.max(points[:, 0])
-        miny, maxy = np.min(points[:, 1]), np.max(points[:, 1])
+    def cloud_to_image(
+        self,
+        points: np.ndarray,
+        resolution: float = 0.1,
+        rotation: np.ndarray | None = None,
+        translation: np.ndarray | None = None,
+        intrinsics: np.ndarray | None = None,
+        distance_threshold: float | None = None,
+        width: int | None = None,
+        height: int | None = None,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        points = _points(points)
+        if self.interactive:
+            raise NotImplementedError(
+                "Interactive camera capture is not supported; provide camera matrices"
+            )
+        pose, intrinsics = self._camera(rotation, translation, intrinsics)
+        width = width or int(np.ceil(2 * intrinsics[0, 2]))
+        height = height or int(np.ceil(2 * intrinsics[1, 2]))
+        if width <= 0 or height <= 0:
+            raise ValueError("image width and height must be positive")
+        uv, depth, valid = self._project(points, intrinsics, pose)
+        if distance_threshold is not None:
+            if distance_threshold <= 0:
+                raise ValueError("distance_threshold must be positive")
+            valid &= depth <= distance_threshold
+        x, y = uv.T
+        valid &= (x >= 0) & (x < width) & (y >= 0) & (y < height)
+        image = np.zeros((height, width, 3), dtype=np.uint8)
+        candidates = np.flatnonzero(valid)
+        flat = y[candidates] * width + x[candidates]
+        order = np.lexsort((-depth[candidates], flat))
+        winners = candidates[order[np.r_[flat[order][1:] != flat[order][:-1], True]]]
+        image[y[winners], x[winners]] = _colors(points)[winners]
+        return image, intrinsics, pose
 
-        width = int((maxx - minx) / resolution) + 1
-        height = int((maxy - miny) / resolution) + 1
-
-        if not self.interactive:
-            # Create 4x4 extrinsics matrix
-            extrinsics = np.eye(4)
-            extrinsics[:3, :3] = rotation
-            extrinsics[:3, 3] = translation
-
-            # Separate the points into 3D coordinates and color values
-            coords = points[:, :3]
-            colors = points[:, 3:6]
-
-            # Camera center
-            C = -np.dot(np.linalg.inv(rotation), translation)
-
-            # Calculate points distance from the camera center
-            distances = np.linalg.norm(coords - C, axis=1)
-
-            # Filter points based on the distance threshold
-            if distance_threshold is not None:
-                coords = coords[distances <= distance_threshold]
-                colors = colors[distances <= distance_threshold]
-
-            # Project 3D points to 2D image using projectPoints
-            if coords.shape[0] > 0:
-                points_2d, _ = cv2.projectPoints(coords, rotation, translation, intrinsics, None)
-            else:
-                image = np.zeros((height, width, 3), dtype=np.uint8)
-                print("WARNING: No points were projected to the image.")
-                print("This can happen if the distance threshold is too small.")
-                return image, intrinsics, extrinsics
-
-            # Create an empty image
-            image = np.zeros((height, width, 3), dtype=np.uint8)
-
-            # Create an empty depth map
-            depth_map = np.full((height, width), np.inf, dtype=np.float32)
-
-            # Fill the image with the color values and make sure that the points are within the image boundaries
-            # Also take the point with the smallest distance to the camera center
-            for i, point in enumerate(points_2d):
-                x, y = point[0]
-                if 0 <= x < width and 0 <= y < height:
-                    if image[int(y), int(x)].any():
-                        existing_dist = depth_map[int(y), int(x)]
-                        curr_dist = distances[i]
-                        if curr_dist < existing_dist:
-                            image[int(y), int(x)] = colors[i]
-                            depth_map[int(y), int(x)] = curr_dist
-                    else:
-                        image[int(y), int(x)] = colors[i]
-                        depth_map[int(y), int(x)] = distances[i]
-
-            return image, intrinsics, extrinsics
-
-        else:
-            # Define the point cloud
-            pcd = o3d.geometry.PointCloud()
-            pcd.points = o3d.utility.Vector3dVector(points[:, :3])
-            pcd.colors = o3d.utility.Vector3dVector(points[:, 3:6] / 255)
-
-            # Visualize the point cloud and save the image
-            vis = o3d.visualization.VisualizerWithKeyCallback()
-            vis.create_window(visible=True, width=1000, height=700)
-            vis.add_geometry(pcd)
-            render = vis.get_render_option()
-            render.point_size = 1
-            render.background_color = np.asarray([0, 0, 0])
-            vis.run()
-            vis.destroy_window()
-
-            # Wait 5 seconds for the image to be saved
-            time.sleep(5)
-
-            # Get the image and camera parameters (find files that starts with Screen)
-            dir_path = os.getcwd()
-            files = os.listdir(dir_path)
-            files = [file for file in files if file.startswith('Screen')]
-            image_path = [file for file in files if file.endswith('.png')]
-            image_path = sorted(image_path, reverse=True)[0]
-            camera_path = [file for file in files if file.endswith('.json')]
-            camera_path = sorted(camera_path, reverse=True)[0]
-
-            # Load the image
-            image = cv2.imread(image_path)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-            # Load the camera parameters
-            with open(camera_path) as file:
-                camera = json.load(file)
-
-            # Convert open3d.geometry.Image to numpy array
-            image = np.asarray(image)
-            intrinsics = np.asarray(camera['intrinsic']['intrinsic_matrix']).reshape((3, 3)).T
-            extrinsics = np.asarray(camera['extrinsic']).reshape((4, 4)).T
-
-            # Delete the files
-            for file in files:
-                os.remove(file)
-
-            return image, intrinsics, extrinsics
-
-
-    def image_to_cloud(self, points: np.ndarray, image: np.ndarray, intrinsics: np.ndarray, extrinsics: np.ndarray) -> np.ndarray:
-        """
-        Converts an image to a point cloud.
-
-        :param points: An array of points in the cloud, where each row represents a point.
-        :type points: ndarray
-        :param image: An image array representing the point cloud, where each pixel contains the RGB color values of the corresponding point in the cloud.
-        :type image: ndarray
-        :param intrinsics: The intrinsics matrix of the camera.
-        :type intrinsics: ndarray (width, height, fx, fy, cx, cy) (6x1)
-        :param extrinsics: The extrinsics matrix of the camera.
-        :type extrinsics: ndarray (4x4)
-        :return: An array of segments' IDs in the cloud, where each row represents the segment's ID of a point.
-        :rtype: ndarray
-        """
-
-        # Create 4x4 extrinsics matrix
-        rotation = extrinsics[:3, :3]
-        translation = extrinsics[:3, 3]
-
-        # Separate the points into 3D coordinates and color values
-        coords = points[:, :3]
-        colors = points[:, 3:6]
-
-        # Project 3D points to 2D image using projectPoints
-        points_2d, _ = cv2.projectPoints(coords, rotation, translation, intrinsics, None)
-
-        # Extract segment IDs from the image
-        # Give -1 as segment ID if the point is outside the image boundaries
-        segment_ids = []
-        unique_values = {}
-        image = np.asarray(image)
-
-        for i, point in enumerate(points_2d):
-            x, y = point[0]
-            if 0 <= x < image.shape[1] and 0 <= y < image.shape[0]:
-                rgb = image[int(y), int(x)]
-            else:
-                rgb = (0, 0, 0)
-
-            if rgb not in unique_values:
-                unique_values[rgb] = len(unique_values)
-
-            id = unique_values[rgb]
-            segment_ids.append(id)
-
-        return segment_ids
+    def image_to_cloud(
+        self,
+        points: np.ndarray,
+        image: np.ndarray,
+        intrinsics: np.ndarray,
+        extrinsics: np.ndarray,
+        distance_threshold: float | None = None,
+    ) -> np.ndarray:
+        points = _points(points)
+        extrinsics = np.asarray(extrinsics, dtype=float)
+        if extrinsics.shape != (4, 4):
+            raise ValueError("extrinsics must have shape (4, 4)")
+        _, intrinsics = self._camera(extrinsics[:3, :3], extrinsics[:3, 3], intrinsics)
+        uv, depth, valid = self._project(points, intrinsics, extrinsics)
+        if distance_threshold is not None:
+            if distance_threshold <= 0:
+                raise ValueError("distance_threshold must be positive")
+            valid &= depth <= distance_threshold
+        return _labels_at(image, uv[:, 0], uv[:, 1], valid)

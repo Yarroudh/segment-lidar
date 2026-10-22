@@ -1,27 +1,26 @@
-FROM ubuntu:22.04
+FROM python:3.12-slim
 
-RUN useradd --create-home --shell /bin/bash user
-WORKDIR /home/user
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    HF_HOME=/home/appuser/.cache/huggingface
 
-# Install Anaconda
-RUN apt-get update && apt-get install -y wget bzip2
-RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh -O ~/anaconda.sh
-RUN /bin/bash ~/anaconda.sh -b -p /opt/conda && \
-    rm ~/anaconda.sh && \
-    echo 'export PATH="/opt/conda/bin:$PATH"' >> ~/.bashrc
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && \
+    rm -rf /var/lib/apt/lists/*
 
-# Configure the environment
-ENV PATH /opt/conda/bin:$PATH
-RUN conda create -n samlidar python=3.9
-RUN echo "conda activate samlidar" > ~/.bashrc
-ENV PATH /opt/conda/envs/env/bin:$PATH
-USER root
+WORKDIR /app
+COPY pyproject.toml README.md LICENSE ./
+COPY segment_lidar ./segment_lidar
 
-# Install GCC
-RUN apt-get install gcc -y
+ARG INSTALL_EXTRAS=sam3
+RUN python -m pip install --no-cache-dir --upgrade pip && \
+    if [ -n "$INSTALL_EXTRAS" ]; then \
+      python -m pip install --no-cache-dir ".[${INSTALL_EXTRAS}]"; \
+    else \
+      python -m pip install --no-cache-dir .; \
+    fi
 
-# Install segment-lidar
-RUN python -m pip install --upgrade pip setuptools wheel cython
-RUN python -m pip install segment-lidar
-
-CMD ["python", "-c", "while True: pass"]
+RUN useradd --create-home appuser
+RUN mkdir -p /data && chown appuser:appuser /data
+USER appuser
+WORKDIR /data
+CMD ["python"]

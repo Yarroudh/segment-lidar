@@ -1,0 +1,14 @@
+.git
+.github
+.env
+.env.*
+.pytest_cache
+.ruff_cache
+__pycache__
+*.pyc
+*.las
+*.laz
+*.npy
+docs
+paper
+tests

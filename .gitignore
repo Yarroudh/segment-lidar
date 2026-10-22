@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+.venv/
+.env
+.env.*
+*.las
+*.laz
+*.npy
+*.tif
+RELEASE_NOTES.md
+scripts/

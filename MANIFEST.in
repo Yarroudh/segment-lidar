@@ -1,0 +1,4 @@
+include README.md LICENSE RELEASE_NOTES.md
+recursive-include assets *.gif *.md
+recursive-include scripts *.py
+recursive-include docs *.html

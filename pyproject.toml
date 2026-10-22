@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "segment-lidar"
+version = "0.3.0"
+description = "Project LiDAR clouds to images and segment them with SAM 3"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [{name = "Anass Yarroudh", email = "ayarroudh@uliege.be"}]
+dependencies = [
+  "numpy>=1.24,<3",
+  "laspy[lazrs]>=2.4,<3",
+  "rasterio>=1.3,<2",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+sam3 = ["transformers>=5.0,<6", "torch>=2.6", "torchvision>=0.21,<1", "pillow>=10"]
+csf = ["cloth-simulation-filter>=1.1.4"]
+test = ["pytest>=8", "ruff>=0.6", "build>=1.2", "pillow>=10"]
+
+[project.urls]
+Repository = "https://github.com/Yarroudh/segment-lidar"
+Issues = "https://github.com/Yarroudh/segment-lidar/issues"
+
+[tool.setuptools.packages.find]
+include = ["segment_lidar*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
