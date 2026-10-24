@@ -1,39 +1,84 @@
+
+
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<html lang="en" data-content_root="./">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>segment-lidar documentation &mdash; segment-lidar</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/site.css?v=c33bb686" />
 
-    <title>segment-lidar documentation &#8212; segment-lidar documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <link rel="stylesheet" type="text/css" href="_static/site.css?v=546c03f8" />
-    <script src="_static/documentation_options.js?v=df9f73ce"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=df9f73ce"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation and model access" href="installation.html" />
+</head>
 
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-
-
-
-
-
-  </head><body>
-
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
 
-          <div class="body" role="main">
+
+          <a href="#" class="icon icon-home">
+            segment-lidar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and model access</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Top view tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pinhole.html">Pinhole camera guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">segment-lidar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">segment-lidar documentation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
 
   <section id="segment-lidar-documentation">
-<h1>segment-lidar documentation<a class="headerlink" href="#segment-lidar-documentation" title="Link to this heading">¶</a></h1>
+<h1>segment-lidar documentation<a class="headerlink" href="#segment-lidar-documentation" title="Link to this heading"></a></h1>
 <p><strong>segment-lidar</strong> projects a LiDAR point cloud to a 2D image, finds object
 instances with Meta’s SAM 3, and assigns the image labels back to the original
 3D points. It supports top and pinhole views, automatic masks, text and box
@@ -42,7 +87,7 @@ prompts, optional ground filtering, cached rasters, and LAS/LAZ output.</p>
 workflow described in documentation published before 0.3. See <a class="reference internal" href="migration.html"><span class="doc">Migrating from the earlier documentation</span></a>
 when updating an older script.</p>
 <section id="start-here">
-<h2>Start here<a class="headerlink" href="#start-here" title="Link to this heading">¶</a></h2>
+<h2>Start here<a class="headerlink" href="#start-here" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="installation.html"><span class="doc">Installation and model access</span></a> — install the package, request SAM 3 model access, and
 set up a token.</p></li>
@@ -92,7 +137,7 @@ examples.</p></li>
 </div>
 </section>
 <section id="how-the-pipeline-works">
-<h2>How the pipeline works<a class="headerlink" href="#how-the-pipeline-works" title="Link to this heading">¶</a></h2>
+<h2>How the pipeline works<a class="headerlink" href="#how-the-pipeline-works" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">read</span></code> loads XYZ or XYZRGB points. An optional <code class="docutils literal notranslate"><span class="pre">csf</span></code> call removes ground
 points. <code class="docutils literal notranslate"><span class="pre">segment</span></code> projects the remaining points with <a class="reference internal" href="module.html#segment_lidar.view.TopView" title="segment_lidar.view.TopView"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopView</span></code></a>
 or <a class="reference internal" href="module.html#segment_lidar.view.PinholeView" title="segment_lidar.view.PinholeView"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinholeView</span></code></a>, runs SAM 3 or reads saved labels,
@@ -104,9 +149,9 @@ project to one pixel, they can receive the same instance label.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">segment_lidar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamLidar</span><span class="p">,</span> <span class="n">TopView</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">SamLidar</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
-<span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pointcloud.las&quot;</span><span class="p">)</span>
-<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">TopView</span><span class="p">(),</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;tree&quot;</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;segmented.las&quot;</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">"pointcloud.las"</span><span class="p">)</span>
+<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">TopView</span><span class="p">(),</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">"tree"</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">"segmented.las"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The repository includes a <a class="reference external" href="https://github.com/Yarroudh/segment-lidar/tree/main/assets">sample animation and data provenance</a> and a
@@ -115,60 +160,33 @@ project to one pixel, they can receive the same instance label.</p>
 </section>
 
 
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation and model access" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023–2026, Anass Yarroudh.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">segment-lidar</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and model access</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Top view tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pinhole.html">Pinhole camera guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
-</ul>
-
-
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &#169;2023–2026, Anass Yarroudh.
-
-      |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
-
-    </div>
-
-
-
-
-  </body>
+</body>
 </html>

@@ -1,65 +1,116 @@
+
+
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<html lang="en" data-content_root="./">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation and model access &mdash; segment-lidar</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/site.css?v=c33bb686" />
 
-    <title>Installation and model access &#8212; segment-lidar documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <link rel="stylesheet" type="text/css" href="_static/site.css?v=546c03f8" />
-    <script src="_static/documentation_options.js?v=df9f73ce"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=df9f73ce"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Top view tutorial" href="tutorial.html" />
     <link rel="prev" title="segment-lidar documentation" href="index.html" />
+</head>
 
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-
-
-
-
-
-  </head><body>
-
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
 
-          <div class="body" role="main">
+
+          <a href="index.html" class="icon icon-home">
+            segment-lidar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and model access</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sam-3-access">SAM 3 access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker">Docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-this-documentation">Building this documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Top view tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pinhole.html">Pinhole camera guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">segment-lidar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation and model access</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
 
   <section id="installation-and-model-access">
-<h1>Installation and model access<a class="headerlink" href="#installation-and-model-access" title="Link to this heading">¶</a></h1>
+<h1>Installation and model access<a class="headerlink" href="#installation-and-model-access" title="Link to this heading"></a></h1>
 <section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
 <p>Use Python 3.10 or newer. A CUDA GPU is recommended for SAM 3 inference; CPU
 inference is supported but can be slow. Projection and reuse of saved labels
 need only the base package.</p>
 <p>Install from PyPI:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;segment-lidar[sam3]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"segment-lidar[sam3]"</span>
 </pre></div>
 </div>
 <p>For the current source checkout:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Yarroudh/segment-lidar.git
 <span class="nb">cd</span><span class="w"> </span>segment-lidar
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[sam3]&quot;</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[sam3]"</span>
 </pre></div>
 </div>
 <p>Install <code class="docutils literal notranslate"><span class="pre">segment-lidar[csf]</span></code> as well if you need cloth simulation ground
 filtering. For a CUDA installation of PyTorch, follow the <a class="reference external" href="https://pytorch.org/get-started/locally/">official PyTorch
 selector</a> for your system.</p>
 <p>Verify the base package:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from segment_lidar import SamLidar, TopView, PinholeView; print(&#39;ready&#39;)&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"from segment_lidar import SamLidar, TopView, PinholeView; print('ready')"</span>
 </pre></div>
 </div>
 </section>
 <section id="sam-3-access">
-<h2>SAM 3 access<a class="headerlink" href="#sam-3-access" title="Link to this heading">¶</a></h2>
+<h2>SAM 3 access<a class="headerlink" href="#sam-3-access" title="Link to this heading"></a></h2>
 <p>The default <code class="docutils literal notranslate"><span class="pre">facebook/sam3</span></code> model is gated on Hugging Face. A token alone
 does not grant access:</p>
 <ol class="arabic simple">
@@ -81,7 +132,7 @@ call. Keep the token out of scripts, notebooks, images, and commits. Using
 not load SAM 3 or require a token.</p>
 </section>
 <section id="docker">
-<h2>Docker<a class="headerlink" href="#docker" title="Link to this heading">¶</a></h2>
+<h2>Docker<a class="headerlink" href="#docker" title="Link to this heading"></a></h2>
 <p>The repository’s Dockerfile installs the SAM 3 extra by default:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>segment-lidar:local<span class="w"> </span>.
 </pre></div>
@@ -89,7 +140,7 @@ not load SAM 3 or require a token.</p>
 <p>Create a local <code class="docutils literal notranslate"><span class="pre">.env</span></code> file containing <code class="docutils literal notranslate"><span class="pre">HF_TOKEN=your_token_here</span></code> and run a
 script from a mounted <code class="docutils literal notranslate"><span class="pre">data</span></code> directory:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--env-file<span class="w"> </span>.env<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data:/data&quot;</span><span class="w"> </span>segment-lidar:local<span class="w"> </span>python<span class="w"> </span>/data/process.py
+<span class="w">  </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/data:/data"</span><span class="w"> </span>segment-lidar:local<span class="w"> </span>python<span class="w"> </span>/data/process.py
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> option requires the NVIDIA container runtime. Omit it for
@@ -97,10 +148,10 @@ CPU inference. Build with <code class="docutils literal notranslate"><span class
 saved-label workflows that do not need SAM 3.</p>
 </section>
 <section id="building-this-documentation">
-<h2>Building this documentation<a class="headerlink" href="#building-this-documentation" title="Link to this heading">¶</a></h2>
+<h2>Building this documentation<a class="headerlink" href="#building-this-documentation" title="Link to this heading"></a></h2>
 <p>Install the documentation extra, then build the GitHub Pages site from its
 maintained source:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[docs]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[docs]"</span>
 python<span class="w"> </span>-m<span class="w"> </span>sphinx<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>-W<span class="w"> </span>--keep-going<span class="w"> </span>docs/_sources<span class="w"> </span>docs
 </pre></div>
 </div>
@@ -110,66 +161,34 @@ python<span class="w"> </span>-m<span class="w"> </span>sphinx<span class="w"> <
 </section>
 
 
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="segment-lidar documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Top view tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023–2026, Anass Yarroudh.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">segment-lidar</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and model access</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#sam-3-access">SAM 3 access</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#docker">Docker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#building-this-documentation">Building this documentation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Top view tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pinhole.html">Pinhole camera guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
-</ul>
-
-
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &#169;2023–2026, Anass Yarroudh.
-
-      |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
-
-    </div>
-
-
-
-
-  </body>
+</body>
 </html>

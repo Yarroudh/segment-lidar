@@ -11,16 +11,21 @@ copyright = "2023–2026, Anass Yarroudh"
 version = "0.3"
 release = "0.3 series"
 
-extensions = ["sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.autodoc", "sphinx_rtd_theme"]
 autodoc_typehints = "description"
 templates_path = []
 exclude_patterns = []
-html_theme = "alabaster"
-html_title = "segment-lidar documentation"
+html_theme = "sphinx_rtd_theme"
+html_title = "segment-lidar"
 html_copy_source = False
 html_static_path = []
 html_css_files = ["site.css"]
-html_sidebars = {"**": ["about.html", "navigation.html", "searchbox.html"]}
+html_theme_options = {
+    "collapse_navigation": True,
+    "sticky_navigation": True,
+    "navigation_depth": 2,
+    "style_external_links": True,
+}
 
 
 def _trim_generated_html(app, exception):

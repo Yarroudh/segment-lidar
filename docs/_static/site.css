@@ -1,19 +1,47 @@
-body { font-size: 16px; }
-div.document { width: min(1200px, 96%); }
-div.documentwrapper { max-width: none; }
-div.body { max-width: 850px; line-height: 1.65; }
-div.body h1, div.body h2, div.body h3 { color: #17324d; }
-div.body a { color: #095a96; }
-div.body pre { border-radius: 6px; padding: 1rem; }
-div.body table.docutils { width: 100%; }
-div.body table.docutils td, div.body table.docutils th { padding: .45rem .6rem; }
-div.sphinxsidebar { font-size: 15px; }
-div.sphinxsidebar ul { margin-left: 1.2rem; }
-div.admonition { border-radius: 5px; }
-@media (max-width: 900px) {
-  div.document { width: 100%; }
-  div.sphinxsidebar { float: none; width: auto; margin: 0 1rem; }
-  div.documentwrapper { float: none; }
-  div.bodywrapper { margin: 0; }
-  div.body { min-width: 0; padding: 1rem; }
+/* Project accents on the Read the Docs layout. */
+.wy-side-nav-search,
+.wy-nav-top {
+  background: #12566a;
+}
+
+.wy-nav-side {
+  background: #173140;
+}
+
+.wy-menu-vertical a:hover,
+.wy-menu-vertical a:focus {
+  background: #275263;
+}
+
+.wy-menu-vertical li.current > a,
+.wy-menu-vertical li.toctree-l1.current > a {
+  border-right-color: #24a6a0;
+}
+
+.wy-nav-content {
+  max-width: 1050px;
+}
+
+.rst-content h1,
+.rst-content h2,
+.rst-content h3 {
+  color: #173140;
+}
+
+.rst-content a {
+  color: #096f83;
+}
+
+.rst-content a:hover,
+.rst-content a:focus {
+  color: #075364;
+}
+
+.rst-content pre,
+.rst-content .highlight {
+  border-radius: 5px;
+}
+
+.rst-content table.docutils {
+  width: 100%;
 }
