@@ -1,1 +1,235 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=index.html"><title>segment-lidar documentation</title></head><body><p>Documentation moved to <a href="index.html">the current guide</a>.</p></body></html>
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Top view tutorial &#8212; segment-lidar documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="_static/site.css?v=546c03f8" />
+    <script src="_static/documentation_options.js?v=df9f73ce"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pinhole camera guide" href="pinhole.html" />
+    <link rel="prev" title="Installation and model access" href="installation.html" />
+
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+
+
+
+
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+          <div class="body" role="main">
+
+  <section id="top-view-tutorial">
+<h1>Top view tutorial<a class="headerlink" href="#top-view-tutorial" title="Link to this heading">¶</a></h1>
+<p>This tutorial covers an aerial LiDAR workflow. See <a class="reference internal" href="pinhole.html"><span class="doc">Pinhole camera guide</span></a> for a
+perspective camera with explicit calibration.</p>
+<section id="input-and-output">
+<h2>Input and output<a class="headerlink" href="#input-and-output" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">read</span></code> accepts LAS, LAZ, and NPY. The point array has shape <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">3)</span></code> for
+XYZ or <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">6)</span></code> for XYZRGB. LAS color is normalized to 0–1 when present.
+NPY arrays must already have one of these shapes. A LAS classification filter
+is available with <code class="docutils literal notranslate"><span class="pre">model.read(&quot;pointcloud.laz&quot;,</span> <span class="pre">classification=6)</span></code>.</p>
+<p>For sample data, the <a class="reference external" href="https://registry.opendata.aws/pmsp-lidar/">Sao Paulo M3DC archive</a> contains RGB aerial LiDAR
+tiles. Check its license and attribution requirements before use. The
+repository’s <a class="reference external" href="https://github.com/Yarroudh/segment-lidar/blob/main/assets/README.md">animation notes</a>
+identify a specific tile and prompt workflow.</p>
+</section>
+<section id="automatic-instance-masks">
+<h2>Automatic instance masks<a class="headerlink" href="#automatic-instance-masks" title="Link to this heading">¶</a></h2>
+<p>With no prompt or boxes, <code class="docutils literal notranslate"><span class="pre">segment</span></code> runs SAM 3 automatic mask generation.
+The top view maps XY to image pixels at <code class="docutils literal notranslate"><span class="pre">resolution</span></code> world units per pixel.
+The highest Z point supplies each pixel’s color.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">segment_lidar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamLidar</span><span class="p">,</span> <span class="n">TopView</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SamLidar</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pointcloud.las&quot;</span><span class="p">)</span>
+<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span>
+    <span class="n">view</span><span class="o">=</span><span class="n">TopView</span><span class="p">(),</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;results/raster.tif&quot;</span><span class="p">,</span>
+    <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;results/labels.tif&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;results/segmented.las&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ids</span></code> contains one label per input point. <code class="docutils literal notranslate"><span class="pre">labels</span></code> is a 2D integer image;
+<code class="docutils literal notranslate"><span class="pre">image</span></code> is a 3 band RGB image. <code class="docutils literal notranslate"><span class="pre">segment</span></code> writes the image and label
+rasters to the chosen paths. The output LAS/LAZ has a signed 32 bit
+<code class="docutils literal notranslate"><span class="pre">segment_id</span></code> extra dimension. Open it in CloudCompare or another LAS viewer
+that displays extra dimensions.</p>
+<p>For automatic generation, tune <code class="docutils literal notranslate"><span class="pre">model.automatic_masks.points_per_crop</span></code> and
+<code class="docutils literal notranslate"><span class="pre">points_per_batch</span></code> (both positive integers) and <code class="docutils literal notranslate"><span class="pre">pred_iou_thresh</span></code> and
+<code class="docutils literal notranslate"><span class="pre">stability_score_thresh</span></code> (both 0–1). The defaults are 32, 16, 0.65, and
+0.7 respectively. More sampled points can take longer.</p>
+</section>
+<section id="text-and-box-prompts">
+<h2>Text and box prompts<a class="headerlink" href="#text-and-box-prompts" title="Link to this heading">¶</a></h2>
+<p>A text prompt finds visible instances of a concept:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">TopView</span><span class="p">(),</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;building&quot;</span><span class="p">,</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;results/building_rgb.tif&quot;</span><span class="p">,</span>
+    <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;results/building_labels.tif&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">model.text_prompt.text</span></code> can hold a default prompt. The per-call <code class="docutils literal notranslate"><span class="pre">prompt</span></code>
+argument overrides it. <code class="docutils literal notranslate"><span class="pre">score_threshold</span></code> and <code class="docutils literal notranslate"><span class="pre">mask_threshold</span></code> default to
+0.5 and must be in 0–1:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">text_prompt</span><span class="o">.</span><span class="n">score_threshold</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="n">model</span><span class="o">.</span><span class="n">text_prompt</span><span class="o">.</span><span class="n">mask_threshold</span> <span class="o">=</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+<p>Boxes use image pixel coordinates <code class="docutils literal notranslate"><span class="pre">[left,</span> <span class="pre">top,</span> <span class="pre">right,</span> <span class="pre">bottom]</span></code>. Positive
+labels are 1 and negative labels are 0. Every box must have positive area and
+fit inside the projected image. A positive box can be used without text; a
+negative-only box set requires text.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;tree&quot;</span><span class="p">,</span>
+    <span class="n">boxes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">80</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">220</span><span class="p">],</span> <span class="p">[</span><span class="mi">210</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">160</span><span class="p">]]),</span>
+    <span class="n">box_labels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;results/tree_rgb.tif&quot;</span><span class="p">,</span>
+    <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;results/tree_labels.tif&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Inspect the projected image before choosing box coordinates. A useful
+token-free step is to call <code class="docutils literal notranslate"><span class="pre">TopView().cloud_to_image(points,</span> <span class="pre">0.25)</span></code> and
+display or save the returned array. Box coordinates refer to <em>that</em> image,
+not to world XY coordinates.</p>
+</section>
+<section id="ground-filtering">
+<h2>Ground filtering<a class="headerlink" href="#ground-filtering" title="Link to this heading">¶</a></h2>
+<p>Install <code class="docutils literal notranslate"><span class="pre">segment-lidar[csf]</span></code> first. Filtering can keep ground points from
+obscuring aerial objects, and the writer can restore their original order:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">segment_lidar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamLidar</span><span class="p">,</span> <span class="n">TopView</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SamLidar</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pointcloud.las&quot;</span><span class="p">)</span>
+<span class="n">cloud</span><span class="p">,</span> <span class="n">non_ground</span><span class="p">,</span> <span class="n">ground</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">csf</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span> <span class="n">class_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">csf_path</span><span class="o">=</span><span class="s2">&quot;results/ground_flags.las&quot;</span>
+<span class="p">)</span>
+<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
+    <span class="n">cloud</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">TopView</span><span class="p">(),</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;results/filtered_rgb.tif&quot;</span><span class="p">,</span>
+    <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;results/filtered_labels.tif&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">non_ground</span><span class="o">=</span><span class="n">non_ground</span><span class="p">,</span> <span class="n">ground</span><span class="o">=</span><span class="n">ground</span><span class="p">,</span>
+    <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;results/segmented.las&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">non_ground</span></code> and <code class="docutils literal notranslate"><span class="pre">ground</span></code> are indices into the original <code class="docutils literal notranslate"><span class="pre">points</span></code> array.
+Ground points receive <code class="docutils literal notranslate"><span class="pre">-1</span></code> in the output. To reuse saved flags with the
+same point order, call
+<code class="docutils literal notranslate"><span class="pre">model.csf(points,</span> <span class="pre">csf_path=&quot;results/ground_flags.las&quot;,</span> <span class="pre">exists=True)</span></code>.</p>
+</section>
+<section id="saved-raster-and-label-workflows">
+<h2>Saved raster and label workflows<a class="headerlink" href="#saved-raster-and-label-workflows" title="Link to this heading">¶</a></h2>
+<p>You can transfer edited or previously computed labels without SAM 3:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">segment_lidar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamLidar</span><span class="p">,</span> <span class="n">TopView</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SamLidar</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pointcloud.las&quot;</span><span class="p">)</span>
+<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span>
+    <span class="n">view</span><span class="o">=</span><span class="n">TopView</span><span class="p">(),</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;results/raster.tif&quot;</span><span class="p">,</span>
+    <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;results/labels.tif&quot;</span><span class="p">,</span>
+    <span class="n">image_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">label_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;results/from_saved_labels.las&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The RGB image must have three bands and the integer label raster one band,
+with matching width and height. Label 0 is background. New top view rasters
+include a spatial transform, so a subset of the original point cloud can
+reuse them. Older rasters without that transform need the same XY origin and
+<code class="docutils literal notranslate"><span class="pre">resolution</span></code> as the cloud used to create them. See <a class="reference internal" href="pinhole.html"><span class="doc">Pinhole camera guide</span></a> for the
+camera parameters required to reuse a perspective raster.</p>
+</section>
+</section>
+
+
+          </div>
+
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">segment-lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and model access</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Top view tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#input-and-output">Input and output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#automatic-instance-masks">Automatic instance masks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text-and-box-prompts">Text and box prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ground-filtering">Ground filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#saved-raster-and-label-workflows">Saved raster and label workflows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pinhole.html">Pinhole camera guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
+</ul>
+
+
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023–2026, Anass Yarroudh.
+
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+
+    </div>
+
+
+
+
+  </body>
+</html>

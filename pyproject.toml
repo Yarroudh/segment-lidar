@@ -28,6 +28,7 @@ classifiers = [
 sam3 = ["transformers>=5.0,<6", "torch>=2.6", "torchvision>=0.21,<1", "pillow>=10"]
 csf = ["cloth-simulation-filter>=1.1.4"]
 test = ["pytest>=8", "ruff>=0.6", "build>=1.2", "pillow>=10"]
+docs = ["sphinx>=8,<9"]
 
 [project.urls]
 Repository = "https://github.com/Yarroudh/segment-lidar"

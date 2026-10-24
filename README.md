@@ -26,7 +26,7 @@ the `tree` prompt found 96 masks. After resolving overlap, the result contains
 points. Both views use the same rotating perspective camera so the 3D structure
 remains visible.
 
-Version 0.3.0 uses the gated
+The 0.3 series uses the gated
 [facebook/sam3 model on Hugging Face](https://huggingface.co/facebook/sam3).
 Inference runs locally after the model files are downloaded.
 
@@ -61,8 +61,8 @@ for detailed usage guidance. The
 [API reference](https://yarroudh.github.io/segment-lidar/module.html) describe
 the available parameters.
 
-The [release notes](RELEASE_NOTES.md) list the changes included in version
-0.3.0.
+The [migration guide](https://yarroudh.github.io/segment-lidar/migration.html)
+explains changes from the earlier SAM 1 documentation.
 
 ## Basic tutorial
 
@@ -174,6 +174,9 @@ of the original cloud to use a saved image and label raster.
 
 ### Pinhole camera
 
+For camera geometry, numeric projection examples, and a complete saved-raster
+workflow, see the [pinhole camera guide](https://yarroudh.github.io/segment-lidar/pinhole.html).
+
 The package supports a custom pinhole camera. `rotation` and `translation`
 transform world points into camera coordinates. `intrinsics` is a 3 by 3
 camera matrix.
@@ -253,7 +256,7 @@ These are the steps to run `segment-lidar` in a Docker container:
 1. Build the current image from the repository:
 
 ```bash
-docker build -t segment-lidar:0.3.0 .
+docker build -t segment-lidar:local .
 ```
 
 2. Create a local `.env` file containing your approved Hugging Face token:
@@ -267,7 +270,7 @@ HF_TOKEN=your_token_here
 
 ```bash
 docker run --rm --gpus all --env-file .env \
-  -v "$PWD/data:/data" segment-lidar:0.3.0 python /data/process.py
+  -v "$PWD/data:/data" segment-lidar:local python /data/process.py
 ```
 
 Output written to `/data` is immediately available in the local `data`
@@ -277,7 +280,7 @@ directory. Docker needs the NVIDIA container runtime for `--gpus all`.
 
 ```bash
 docker run --rm --env-file .env \
-  -v "$PWD/data:/data" segment-lidar:0.3.0 python /data/process.py
+  -v "$PWD/data:/data" segment-lidar:local python /data/process.py
 ```
 
 Use `--build-arg INSTALL_EXTRAS=` during the build to create a smaller image

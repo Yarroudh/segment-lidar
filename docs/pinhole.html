@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Pinhole camera guide &#8212; segment-lidar documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="_static/site.css?v=546c03f8" />
+    <script src="_static/documentation_options.js?v=df9f73ce"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API reference" href="module.html" />
+    <link rel="prev" title="Top view tutorial" href="tutorial.html" />
+
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+
+
+
+
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+          <div class="body" role="main">
+
+  <section id="pinhole-camera-guide">
+<h1>Pinhole camera guide<a class="headerlink" href="#pinhole-camera-guide" title="Link to this heading">¶</a></h1>
+<p>A pinhole view gives a perspective image from a chosen camera. It is useful
+for facades, individual trees, and oblique scenes where a top view hides
+vertical structure. The camera is supplied as numerical matrices through
+<code class="docutils literal notranslate"><span class="pre">SamLidar</span></code>; <code class="docutils literal notranslate"><span class="pre">PinholeView(interactive=True)</span></code> currently raises
+<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>.</p>
+<a class="reference internal image-reference" href="_images/views.png"><img alt="Top view and pinhole view of point clouds from the original project examples" src="_images/views.png" style="width: 100%;" />
+</a>
+<p>The two views above illustrate their different camera geometry. They are
+historical project examples, rather than output of the current SAM 3 model.</p>
+<section id="coordinate-convention">
+<h2>Coordinate convention<a class="headerlink" href="#coordinate-convention" title="Link to this heading">¶</a></h2>
+<p>For a world point <code class="docutils literal notranslate"><span class="pre">X_world</span> <span class="pre">=</span> <span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z]</span></code>, the camera coordinates are</p>
+<div class="math notranslate nohighlight">
+\[X_\mathrm{camera} = R X_\mathrm{world} + t.\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">rotation</span></code> is the 3 by 3 world-to-camera matrix <code class="docutils literal notranslate"><span class="pre">R</span></code> and <code class="docutils literal notranslate"><span class="pre">translation</span></code>
+is the three element vector <code class="docutils literal notranslate"><span class="pre">t</span></code>. They are <strong>not</strong> the camera-to-world pose.
+To place the camera center at world coordinate <code class="docutils literal notranslate"><span class="pre">C</span></code>, compute
+<code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">-R</span> <span class="pre">&#64;</span> <span class="pre">C</span></code>. The returned 4 by 4 <code class="docutils literal notranslate"><span class="pre">pose</span></code> has <code class="docutils literal notranslate"><span class="pre">R</span></code> in its upper left and
+<code class="docutils literal notranslate"><span class="pre">t</span></code> in its upper right; it is also world-to-camera.</p>
+<p>Camera <code class="docutils literal notranslate"><span class="pre">+Z</span></code> points forward, <code class="docutils literal notranslate"><span class="pre">+X</span></code> points right, and <code class="docutils literal notranslate"><span class="pre">+Y</span></code> points down in
+the image. Only points with positive camera Z are projected. The 3 by 3
+intrinsic matrix is typically</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}K = \begin{bmatrix} f_x &amp; 0 &amp; c_x \\ 0 &amp; f_y &amp; c_y \\ 0 &amp; 0 &amp; 1 \end{bmatrix}.\end{split}\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">fx</span></code> and <code class="docutils literal notranslate"><span class="pre">fy</span></code> are focal lengths in <strong>pixels</strong>; <code class="docutils literal notranslate"><span class="pre">cx</span></code> and <code class="docutils literal notranslate"><span class="pre">cy</span></code> are the
+principal point in image pixels. The image origin is at its upper left. The
+implementation computes <code class="docutils literal notranslate"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">fx*X/Z</span> <span class="pre">+</span> <span class="pre">cx</span></code> and <code class="docutils literal notranslate"><span class="pre">v</span> <span class="pre">=</span> <span class="pre">fy*Y/Z</span> <span class="pre">+</span> <span class="pre">cy</span></code> for this
+standard matrix, then floors both coordinates to choose an integer pixel.
+It also accepts an upper-left 2 by 2 skew term. The image size is set by
+<code class="docutils literal notranslate"><span class="pre">width</span></code> and <code class="docutils literal notranslate"><span class="pre">height</span></code> on <code class="docutils literal notranslate"><span class="pre">SamLidar</span></code>; both default to 512. Choose
+<code class="docutils literal notranslate"><span class="pre">cx=width/2</span></code> and <code class="docutils literal notranslate"><span class="pre">cy=height/2</span></code> for a centered principal point.
+<code class="docutils literal notranslate"><span class="pre">resolution</span></code> applies only to top views and does not set pinhole pixel size.</p>
+</section>
+<section id="numerical-example">
+<h2>Numerical example<a class="headerlink" href="#numerical-example" title="Link to this heading">¶</a></h2>
+<p>Place the camera at <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">10)</span></code> and point it straight down toward
+world <code class="docutils literal notranslate"><span class="pre">-Z</span></code>. With world Y increasing upward in the desired image, use
+<code class="docutils literal notranslate"><span class="pre">R</span> <span class="pre">=</span> <span class="pre">diag(1,</span> <span class="pre">-1,</span> <span class="pre">-1)</span></code> and <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">-R</span> <span class="pre">&#64;</span> <span class="pre">C</span> <span class="pre">=</span> <span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">10)</span></code>. Let
+<code class="docutils literal notranslate"><span class="pre">fx=fy=500</span></code>, <code class="docutils literal notranslate"><span class="pre">cx=320</span></code>, and <code class="docutils literal notranslate"><span class="pre">cy=240</span></code> for a 640 by 480 image.</p>
+<p>The point <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">0)</span></code> becomes camera point <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">-1,</span> <span class="pre">10)</span></code>. It lands at
+<code class="docutils literal notranslate"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">500*1/10+320</span> <span class="pre">=</span> <span class="pre">370</span></code> and <code class="docutils literal notranslate"><span class="pre">v</span> <span class="pre">=</span> <span class="pre">500*(-1)/10+240</span> <span class="pre">=</span> <span class="pre">190</span></code>. The point
+<code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">11)</span></code> has camera depth <code class="docutils literal notranslate"><span class="pre">-1</span></code> and is discarded because it is behind
+the camera.</p>
+<p>Run the projection without downloading a model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">segment_lidar</span><span class="w"> </span><span class="kn">import</span> <span class="n">PinholeView</span>
+
+<span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>   <span class="c1"># red, projected to (370, 190)</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>   <span class="c1"># green, projected to (320, 240)</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>  <span class="c1"># behind the camera</span>
+<span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">320</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">240</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">])</span>
+<span class="n">camera_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">])</span>
+<span class="n">t</span> <span class="o">=</span> <span class="o">-</span><span class="n">R</span> <span class="o">@</span> <span class="n">camera_center</span>
+
+<span class="n">view</span> <span class="o">=</span> <span class="n">PinholeView</span><span class="p">()</span>
+<span class="n">image</span><span class="p">,</span> <span class="n">intrinsics</span><span class="p">,</span> <span class="n">pose</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">cloud_to_image</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span> <span class="n">intrinsics</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="n">R</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">640</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">480</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">assert</span> <span class="n">image</span><span class="p">[</span><span class="mi">190</span><span class="p">,</span> <span class="mi">370</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="k">assert</span> <span class="n">image</span><span class="p">[</span><span class="mi">240</span><span class="p">,</span> <span class="mi">320</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="k">assert</span> <span class="n">image</span><span class="p">[</span><span class="mi">240</span><span class="p">,</span> <span class="mi">370</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="segmentation-of-a-real-cloud">
+<h2>Segmentation of a real cloud<a class="headerlink" href="#segmentation-of-a-real-cloud" title="Link to this heading">¶</a></h2>
+<p>The following complete example looks down at the XY center of a cloud from
+30 world units above its highest point. Adjust the focal length, camera
+height, and orientation after inspecting the saved RGB raster. It runs SAM 3
+and needs approved model access as described in <a class="reference internal" href="installation.html"><span class="doc">Installation and model access</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">segment_lidar</span><span class="w"> </span><span class="kn">import</span> <span class="n">PinholeView</span><span class="p">,</span> <span class="n">SamLidar</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SamLidar</span><span class="p">()</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pointcloud.las&quot;</span><span class="p">)</span>
+<span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">768</span>
+<span class="n">center_xy</span> <span class="o">=</span> <span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">camera_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">*</span><span class="n">center_xy</span><span class="p">,</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mf">30.0</span><span class="p">])</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">])</span>
+<span class="n">t</span> <span class="o">=</span> <span class="o">-</span><span class="n">R</span> <span class="o">@</span> <span class="n">camera_center</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">700.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">700.0</span><span class="p">,</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+<span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">intrinsics</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">rotation</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">translation</span> <span class="o">=</span> <span class="n">K</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">t</span>
+<span class="n">model</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span>
+<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">K_used</span><span class="p">,</span> <span class="n">pose</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span>
+    <span class="n">view</span><span class="o">=</span><span class="n">PinholeView</span><span class="p">(),</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;tree&quot;</span><span class="p">,</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;results/pinhole_rgb.tif&quot;</span><span class="p">,</span>
+    <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;results/pinhole_labels.tif&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;results/pinhole_segments.las&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">K_used</span></code> and <code class="docutils literal notranslate"><span class="pre">pose</span></code> are the matrices actually used for projection. Keep
+them with the raster if you plan to transfer its labels again. For a wider
+scene, lower <code class="docutils literal notranslate"><span class="pre">fx</span></code> and <code class="docutils literal notranslate"><span class="pre">fy</span></code> or move the camera farther away. Pixels outside
+the image and points behind the camera receive <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</section>
+<section id="visibility-and-label-transfer">
+<h2>Visibility and label transfer<a class="headerlink" href="#visibility-and-label-transfer" title="Link to this heading">¶</a></h2>
+<p>For each pixel, the RGB image shows the <strong>nearest positive-depth point</strong>.
+Other points at the same pixel do not supply color. During label transfer,
+however, all points projecting to a labeled pixel receive that label,
+including points hidden behind the visible surface. Use additional views or
+3D checks if this matters for your analysis. Empty RGB pixels are black.</p>
+<p><code class="docutils literal notranslate"><span class="pre">distance_threshold</span></code> is an optional upper limit on <strong>positive camera Z</strong>,
+in the same units as the input coordinates. It is not Euclidean distance from
+the camera. The same threshold is used during projection and label transfer:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">distance_threshold</span> <span class="o">=</span> <span class="mf">50.0</span>
+</pre></div>
+</div>
+<p>The camera matrices must contain finite values, <code class="docutils literal notranslate"><span class="pre">fx</span></code> and <code class="docutils literal notranslate"><span class="pre">fy</span></code> must be
+positive, and image dimensions must be positive. Inputs of shape <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">3)</span></code>
+without RGB are rendered white.</p>
+</section>
+<section id="reuse-a-pinhole-label-raster">
+<h2>Reuse a pinhole label raster<a class="headerlink" href="#reuse-a-pinhole-label-raster" title="Link to this heading">¶</a></h2>
+<p>Pinhole GeoTIFFs have no spatial transform that can recover the camera. To
+reuse a saved RGB and label pair, supply <strong>the same</strong> <code class="docutils literal notranslate"><span class="pre">K</span></code>, <code class="docutils literal notranslate"><span class="pre">R</span></code>, <code class="docutils literal notranslate"><span class="pre">t</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">distance_threshold</span></code> that created it. The cached image determines the
+image dimensions; the current <code class="docutils literal notranslate"><span class="pre">width</span></code> and <code class="docutils literal notranslate"><span class="pre">height</span></code> are used only when
+generating a new image. No SAM 3 token is needed in this example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">segment_lidar</span><span class="w"> </span><span class="kn">import</span> <span class="n">PinholeView</span><span class="p">,</span> <span class="n">SamLidar</span>
+
+<span class="n">cached</span> <span class="o">=</span> <span class="n">SamLidar</span><span class="p">(</span>
+    <span class="n">intrinsics</span><span class="o">=</span><span class="n">K_used</span><span class="p">,</span>
+    <span class="n">rotation</span><span class="o">=</span><span class="n">pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">],</span>
+    <span class="n">translation</span><span class="o">=</span><span class="n">pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="n">distance_threshold</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">distance_threshold</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">subset</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:</span><span class="mi">1000</span><span class="p">]</span>
+<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cached</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
+    <span class="n">subset</span><span class="p">,</span>
+    <span class="n">view</span><span class="o">=</span><span class="n">PinholeView</span><span class="p">(),</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="s2">&quot;results/pinhole_rgb.tif&quot;</span><span class="p">,</span>
+    <span class="n">labels_path</span><span class="o">=</span><span class="s2">&quot;results/pinhole_labels.tif&quot;</span><span class="p">,</span>
+    <span class="n">image_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">label_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The RGB raster must have three bands, the label raster one band, and their
+pixel dimensions must match. Background label 0 becomes point label -1.</p>
+</section>
+</section>
+
+
+          </div>
+
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">segment-lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and model access</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Top view tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pinhole camera guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#coordinate-convention">Coordinate convention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#numerical-example">Numerical example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#segmentation-of-a-real-cloud">Segmentation of a real cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visibility-and-label-transfer">Visibility and label transfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reuse-a-pinhole-label-raster">Reuse a pinhole label raster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
+</ul>
+
+
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023–2026, Anass Yarroudh.
+
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+
+    </div>
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Troubleshooting &#8212; segment-lidar documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="_static/site.css?v=546c03f8" />
+    <script src="_static/documentation_options.js?v=df9f73ce"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Citation" href="citation.html" />
+    <link rel="prev" title="Migrating from the earlier documentation" href="migration.html" />
+
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+
+
+
+
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+          <div class="body" role="main">
+
+  <section id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h1>
+<p><strong>Model access error or HTTP 401/403.</strong> Request access to
+<a class="reference external" href="https://huggingface.co/facebook/sam3">facebook/sam3</a> and use a token from
+the approved account. A valid token from a different account is insufficient.
+For existing labels, set both <code class="docutils literal notranslate"><span class="pre">image_exists=True</span></code> and <code class="docutils literal notranslate"><span class="pre">label_exists=True</span></code>
+to avoid model loading.</p>
+<p><strong>SAM 3 import error.</strong> Install <code class="docutils literal notranslate"><span class="pre">segment-lidar[sam3]</span></code> in the same Python
+environment used to run the script. For ground filtering, install
+<code class="docutils literal notranslate"><span class="pre">segment-lidar[csf]</span></code>.</p>
+<p><strong>The output is mostly -1.</strong> Inspect the RGB raster first. For a pinhole
+camera, verify world-to-camera <code class="docutils literal notranslate"><span class="pre">R</span></code> and <code class="docutils literal notranslate"><span class="pre">t</span></code>, positive camera Z, image
+size, focal length, and <code class="docutils literal notranslate"><span class="pre">distance_threshold</span></code>. For top view, confirm the
+image and label raster share dimensions and that cached rasters cover the
+points. Unlabeled raster pixels also yield -1.</p>
+<p><strong>Pinhole image is empty or cropped.</strong> Set the camera center and rotation so
+the cloud is in front of the camera. Lower <code class="docutils literal notranslate"><span class="pre">fx</span></code>/<code class="docutils literal notranslate"><span class="pre">fy</span></code> for a wider field of
+view, raise <code class="docutils literal notranslate"><span class="pre">width</span></code>/<code class="docutils literal notranslate"><span class="pre">height</span></code>, or move the camera back. Check the numerical
+example in <a class="reference internal" href="pinhole.html"><span class="doc">Pinhole camera guide</span></a> before using survey coordinates.</p>
+<p><strong>The pinhole labels reach points behind the visible surface.</strong> The raster
+uses the nearest point for color, but label transfer assigns a pixel’s label
+to every point that projects there. Inspect extra views or apply your own
+visibility check if this affects the application.</p>
+<p><strong>A cached raster gives different labels.</strong> Reuse the same camera matrices
+and depth threshold for pinhole views. For top views, prefer a saved raster
+with its GeoTIFF spatial transform. Older unreferenced top view rasters need
+the original XY origin and resolution.</p>
+<p><strong>Interactive camera error.</strong> <code class="docutils literal notranslate"><span class="pre">PinholeView(interactive=True)</span></code> is not
+implemented in the 0.3 series. Supply explicit matrices as in <a class="reference internal" href="pinhole.html"><span class="doc">Pinhole camera guide</span></a>.</p>
+</section>
+
+
+          </div>
+
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">segment-lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and model access</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Top view tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pinhole.html">Pinhole camera guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
+</ul>
+
+
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023–2026, Anass Yarroudh.
+
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+
+    </div>
+
+
+
+
+  </body>
+</html>

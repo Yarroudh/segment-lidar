@@ -14,3 +14,5 @@ build/
 *.tif
 RELEASE_NOTES.md
 scripts/
+docs/.doctrees/
+docs/.buildinfo.bak

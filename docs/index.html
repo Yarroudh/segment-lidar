@@ -1,59 +1,174 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>segment-lidar 0.3.0</title>
-  <style>
-    :root{color-scheme:light;background:#f5f7fa;color:#17212b;font:16px/1.6 system-ui,sans-serif}
-    body{max-width:860px;margin:0 auto;padding:2rem 1.25rem 5rem}
-    h1,h2{line-height:1.2}h1{font-size:2.6rem}h2{margin-top:2.7rem}
-    a{color:#0757a6}nav{display:flex;gap:1rem;flex-wrap:wrap}
-    pre{overflow:auto;background:#e9eef4;padding:1.1rem;border-radius:8px}
-    code{font:0.9em ui-monospace,monospace}img{width:100%;border-radius:12px}
-    .note{border-left:4px solid #0757a6;padding:.4rem 1rem;background:#e9eef4}
-  </style>
-</head>
-<body>
-  <h1>segment-lidar 0.3.0</h1>
-  <p>Project LiDAR clouds to images, find objects with SAM 3, and transfer labels to 3D points.</p>
-  <img src="https://raw.githubusercontent.com/Yarroudh/segment-lidar/main/assets/workflow.gif" alt="Rotating Sao Paulo aerial LiDAR before and after prompted SAM 3 instances">
-  <p>The animation uses 5,556,802 RGB points from the <a href="https://registry.opendata.aws/pmsp-lidar/">Sao Paulo M3DC aerial LiDAR archive</a>, licensed under GPL 3.0. The <code>buildings</code> and <code>tree</code> prompts generated 124 masks. After overlap was resolved, 115 visible labels reached 2,907,279 points. The 1600 by 900 perspective animation draws a fixed 1,600,000 point sample from the urban part of the tile. Building instances use warm colors, tree instances use green colors, and gray means no label.</p>
-  <nav><a href="#access">Model access</a><a href="#install">Install</a><a href="#example">Example</a><a href="#boxes">Boxes</a><a href="#docker">Docker</a><a href="#labels">Saved labels</a></nav>
-  <h2 id="access">Get access to SAM 3</h2>
-  <ol>
-    <li>Sign in and open the <a href="https://huggingface.co/facebook/sam3">SAM 3 model page</a>.</li>
-    <li>Read the conditions, request access, and agree to share the requested information with Meta. Wait for approval if review is required.</li>
-    <li>Create a <a href="https://huggingface.co/settings/tokens">Hugging Face token</a> with read access to the model.</li>
-    <li>Provide the token as <code>HF_TOKEN</code> or pass it as <code>hf_token</code> to <code>SamLidar</code>.</li>
-  </ol>
-  <p class="note">Access requests must be made in a browser. A token from an account without approval cannot download the model.</p>
-  <h2 id="install">Install</h2>
-  <pre><code>python -m pip install "segment-lidar[sam3]"</code></pre>
-  <p>Python 3.10 or newer is required. A CUDA GPU is recommended for inference.</p>
-  <h2 id="example">Automatic masks</h2>
-  <pre><code>from segment_lidar import SamLidar, TopView
-model = SamLidar(resolution=0.25)
-points = model.read("pointcloud.las")
-ids, labels, image = model.segment(points, view=TopView())
-model.write(points, ids, save_path="segmented.las")</code></pre>
-  <p>The <a href="https://huggingface.co/facebook/sam3#automatic-mask-generation-with-pipeline">SAM 3 mask generation pipeline</a> samples a 32 by 32 point grid by default. Set <code>model.automatic_masks.points_per_crop</code> to change grid density. The model loads from Hugging Face on the first inference call and runs locally after download. The token is never written to output files.</p>
-  <h2>Text prompt</h2>
-  <pre><code>ids, labels, image = model.segment(points, prompt="tree")</code></pre>
-  <h2 id="boxes">Box prompts</h2>
-  <p>Use image pixel coordinates in the form <code>[left, top, right, bottom]</code>. Label 1 means include and 0 means exclude. Text and boxes may be combined.</p>
-  <pre><code>ids, labels, image = model.segment(
-    points, prompt="tree",
-    boxes=[[80, 40, 180, 220], [210, 30, 300, 160]],
-    box_labels=[1, 0],
-)</code></pre>
-  <h2 id="labels">Saved labels</h2>
-  <p>Provide <code>image_exists=True</code> and <code>label_exists=True</code> to use saved rasters without a token. Raster value 0 is background; unmatched points receive <code>-1</code>. Top view rasters include a spatial transform so a subset of the cloud can use a saved image.</p>
-  <h2 id="docker">Docker</h2>
-  <p>The image includes the SAM 3 runtime. Supply your token only at run time through a local <code>.env</code> file.</p>
-  <pre><code>docker build -t segment-lidar:0.3.0 .
-docker run --rm --gpus all --env-file .env -v "$PWD/data:/data" \
-  segment-lidar:0.3.0 python /data/process.py</code></pre>
-  <p>See the <a href="https://github.com/Yarroudh/segment-lidar#readme">full guide</a> for pinhole cameras, ground filtering, and migration notes.</p>
-</body>
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>segment-lidar documentation &#8212; segment-lidar documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="_static/site.css?v=546c03f8" />
+    <script src="_static/documentation_options.js?v=df9f73ce"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation and model access" href="installation.html" />
+
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+
+
+
+
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+          <div class="body" role="main">
+
+  <section id="segment-lidar-documentation">
+<h1>segment-lidar documentation<a class="headerlink" href="#segment-lidar-documentation" title="Link to this heading">¶</a></h1>
+<p><strong>segment-lidar</strong> projects a LiDAR point cloud to a 2D image, finds object
+instances with Meta’s SAM 3, and assigns the image labels back to the original
+3D points. It supports top and pinhole views, automatic masks, text and box
+prompts, optional ground filtering, cached rasters, and LAS/LAZ output.</p>
+<p>The current API is the <strong>0.3 series</strong>. SAM 3 replaces the SAM 1 checkpoint
+workflow described in documentation published before 0.3. See <a class="reference internal" href="migration.html"><span class="doc">Migrating from the earlier documentation</span></a>
+when updating an older script.</p>
+<section id="start-here">
+<h2>Start here<a class="headerlink" href="#start-here" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="installation.html"><span class="doc">Installation and model access</span></a> — install the package, request SAM 3 model access, and
+set up a token.</p></li>
+<li><p><a class="reference internal" href="tutorial.html"><span class="doc">Top view tutorial</span></a> — complete top view workflows, prompts, filtering, and saved
+rasters.</p></li>
+<li><p><a class="reference internal" href="pinhole.html"><span class="doc">Pinhole camera guide</span></a> — camera geometry and worked projection and segmentation
+examples.</p></li>
+<li><p><a class="reference internal" href="module.html"><span class="doc">API reference</span></a> — constructor, method, and view reference.</p></li>
+</ol>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and model access</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#sam-3-access">SAM 3 access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#docker">Docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#building-this-documentation">Building this documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Top view tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#input-and-output">Input and output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#automatic-instance-masks">Automatic instance masks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#text-and-box-prompts">Text and box prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#ground-filtering">Ground filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#saved-raster-and-label-workflows">Saved raster and label workflows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pinhole.html">Pinhole camera guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pinhole.html#coordinate-convention">Coordinate convention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pinhole.html#numerical-example">Numerical example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pinhole.html#segmentation-of-a-real-cloud">Segmentation of a real cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pinhole.html#visibility-and-label-transfer">Visibility and label transfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pinhole.html#reuse-a-pinhole-label-raster">Reuse a pinhole label raster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module.html#samlidar-configuration">SamLidar configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module.html#i-o-and-processing-methods">I/O and processing methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module.html#projection-views">Projection views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
+</ul>
+</div>
+</section>
+<section id="how-the-pipeline-works">
+<h2>How the pipeline works<a class="headerlink" href="#how-the-pipeline-works" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">read</span></code> loads XYZ or XYZRGB points. An optional <code class="docutils literal notranslate"><span class="pre">csf</span></code> call removes ground
+points. <code class="docutils literal notranslate"><span class="pre">segment</span></code> projects the remaining points with <a class="reference internal" href="module.html#segment_lidar.view.TopView" title="segment_lidar.view.TopView"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopView</span></code></a>
+or <a class="reference internal" href="module.html#segment_lidar.view.PinholeView" title="segment_lidar.view.PinholeView"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinholeView</span></code></a>, runs SAM 3 or reads saved labels,
+and transfers the labels to points. <code class="docutils literal notranslate"><span class="pre">write</span></code> stores a signed 32 bit
+<code class="docutils literal notranslate"><span class="pre">segment_id</span></code> extra dimension in LAS/LAZ.</p>
+<p>The image label <strong>0</strong> is background. Point label <strong>-1</strong> means background or
+outside the image; positive values identify instances. When several points
+project to one pixel, they can receive the same instance label.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">segment_lidar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamLidar</span><span class="p">,</span> <span class="n">TopView</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SamLidar</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pointcloud.las&quot;</span><span class="p">)</span>
+<span class="n">ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">image</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">TopView</span><span class="p">(),</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;tree&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;segmented.las&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The repository includes a <a class="reference external" href="https://github.com/Yarroudh/segment-lidar/tree/main/assets">sample animation and data provenance</a> and a
+<a class="reference external" href="https://github.com/Yarroudh/segment-lidar/issues">GitHub issue tracker</a>.</p>
+</section>
+</section>
+
+
+          </div>
+
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">segment-lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and model access</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Top view tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pinhole.html">Pinhole camera guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating from the earlier documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License and support</a></li>
+</ul>
+
+
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023–2026, Anass Yarroudh.
+
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+
+    </div>
+
+
+
+
+  </body>
 </html>
